@@ -1,0 +1,68 @@
+package module;
+
+public class MethodExecution {
+	//create a method
+	public int addNumbers(int x,int y) {
+		int result = x + y;
+		return result;
+	}
+
+	public static void main(String[] args) {
+		
+		    int a = 20;
+		    int b = 10;
+		
+		MethodExecution obj = new MethodExecution();
+		int result = obj.addNumbers(a,b);
+		System.out.println("multiplication is:"+result);
+
+	}
+	
+     //call by value
+     public static class callMethod{
+     int i = 10;
+     int operation(int i) {
+	     i = i*20/100;
+	     return(i);
+}
+public static void main(String args[]) {
+	callMethod d = new callMethod();
+	System.out.println("before operation calue od data is"+d.i);
+	d.operation(100);
+	System.out.println("after operation value of data is"+d.i);
+}
+}
+
+//method overloading
+public static class overloading{
+	public void area(int r)
+	{
+		System.out.println("Area of circle:"+(3.14*r*r));
+	}
+	public void area(int l, int w)
+		
+	{
+		System.out.println("Area of rectangle:"+(l*w));
+		
+	}
+    public static void main(String args[])
+    {
+overloading ob = new overloading();
+    ob.area(15,25);
+    ob.area(20,30);
+	
+	
+}
+	
+}
+
+
+
+
+	
+	
+	
+	
+
+
+}
