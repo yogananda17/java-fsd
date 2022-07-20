@@ -1,0 +1,11 @@
+AIM:To Implement the arithmetic calculator program using java
+
+
+ALOGORITHM:
+STEP1:Start the programm
+STEP2:First create scanner
+STEP3:After giving name also given main method
+STEP4:create a character and integers n1,n2, using double
+STEP5:In this program we uses switch case statements
+STEP6:If we give an wrong input it return to default and shows wrong input
+STEP7:Stop the program

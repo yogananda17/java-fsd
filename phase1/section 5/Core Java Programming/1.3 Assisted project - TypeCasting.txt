@@ -1,0 +1,49 @@
+package module;
+
+public class typecasting {
+        //implicit type casting
+	public static void main(String[] args) {
+		int a = 10;
+		System.out.println("value of:"+a);
+		long l = a;
+		double d = a;
+		float f = a;
+		System.out.println("value of l:"+l);
+		System.out.println("value of d:"+d);
+		System.out.println("value of f:"+f);
+		
+		
+		
+		//explicit type casting
+		
+		double data = 10.99;
+		System.out.println("double value:"+data);
+		int num = (int)data;
+		float p = (float)data;
+		long s = (long)data;
+		System.out.println("int value:"+num);
+		System.out.println("float value:"+p);
+		System.out.println("long value:"+s);
+		 
+		
+		
+		
+		
+				
+				
+						
+						
+				
+
+			
+
+		
+		
+		
+				
+				
+		
+
+	}
+
+}

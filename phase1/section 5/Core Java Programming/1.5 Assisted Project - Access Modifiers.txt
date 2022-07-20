@@ -1,0 +1,111 @@
+/ACCESS MODIFIER PROTECTED
+
+
+
+
+package package1;                                                           
+
+public class access1 {
+	
+	protected int hours = 9;
+	protected int minutes = 45;
+	protected int seconds = 50;
+	
+	public int gethours() {
+		return hours;
+	}
+
+
+//ACCESS MODIFIER DEFALUT
+public class access1 {
+	
+	 int hours = 9;
+         int minutes = 45;
+         int seconds = 50;
+	
+	public int gethours() {
+		return hours;
+	}
+
+	
+
+}
+
+
+//ACCESS MODIFIER PRIVATE
+
+package package1;
+
+public class access1 {
+	
+	private int hours = 9;
+	private int minutes = 45;
+	private int seconds = 50;
+	
+	public int gethours() {
+		return hours;
+	}
+
+	
+
+}
+
+//ACCESS MODIFIER PUBLIC
+
+package package1;
+
+public class access1 {
+	
+	public int hours = 9;
+	public int minutes = 45;
+	public int seconds = 50;
+	
+	public int gethours() {
+		return hours;
+	}
+
+	
+
+}
+
+
+
+//package1, access2
+
+package package1;
+
+public class access2 {
+
+	public static void main(String[] args) {
+		
+		access1 acc = new access1();
+		System.out.println(acc.gethours());
+		System.out.println(acc.minutes);
+		System.out.println(acc.seconds);
+		
+		
+
+	}
+
+}
+
+
+
+//package2,access3
+package package2;
+
+import package1.access1;
+
+public class access3 extends access1{
+
+
+
+	public static void main(String[] args) {
+		access3 acc = new access3();
+		System.out.println(acc.gethours());
+		System.out.println(acc.minutes);
+		System.out.println(acc.seconds);
+
+	}
+
+}

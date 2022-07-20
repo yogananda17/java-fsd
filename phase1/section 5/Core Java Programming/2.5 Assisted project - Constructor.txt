@@ -1,0 +1,33 @@
+package com;
+class Employee{
+	int id;
+	String name;
+	float salary;
+	public Employee() {
+		id=345;
+		name="xyz";
+		salary = 5000;
+	}
+	Employee(int id, String name,float salary){
+		this.id = id;
+		this.name=name;
+		this.salary = salary;
+	}
+	void display() {
+		System.out.println("id is" +id);
+		System.out.println("name is" +name);
+		System.out.println("salary is" +salary);
+	}
+	
+}
+
+public class Constructor {
+
+	public static void main(String[] args) {
+		Employee emp1 = new Employee();       emp1.display();
+		Employee emp2 = new Employee(567, "hari", 6000);     emp2.display();
+		
+
+	}
+
+}
