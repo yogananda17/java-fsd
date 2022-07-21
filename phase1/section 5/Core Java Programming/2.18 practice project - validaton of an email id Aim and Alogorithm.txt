@@ -1,0 +1,11 @@
+AIM:To Implement the Validation of an Email Id program using java
+
+
+ALOGORITHM:
+STEP1:Start the programm
+STEP2:enter the email1 which is valid Email Id
+STEP3:enter the email2 which is invalid Email Id
+STEP4:By using og emailRegex we check whether given Email Id is valid or not.
+STEP5:If email is null or empty it return invalid
+STEP6:If email matches it return valid or else return invalid
+STEP7:Stop the program

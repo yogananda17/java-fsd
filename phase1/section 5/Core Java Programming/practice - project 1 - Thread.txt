@@ -1,0 +1,37 @@
+package Multi;
+//extending Thread class
+	class MyThread extends Thread{
+		public void run() {
+			System.out.println("thread started running...");
+		}
+	
+
+	public static void main(String[] args) {
+		MyThread t1 = new MyThread();
+	    t1.start();
+
+			
+		}
+
+	}
+
+
+package Multi;
+//Runnable
+
+	class Multi2 implements Runnable{
+	public void run() {
+		System.out.println("thread started running");
+	}
+	
+
+	public static void main(String[] args) {
+		Multi2 m1 = new Multi2();
+		Thread t1 = new Thread(m1); 
+		t1.start();
+		
+	
+
+	}
+
+}
