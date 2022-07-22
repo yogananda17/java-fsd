@@ -1,0 +1,27 @@
+package com;
+
+public class ExeceptionHandling {
+
+	public static void main(String[] args) {
+		System.out.println("hello");
+		int a = 10;
+		int b = 0;
+		try {
+			int result = a/b;
+			System.out.println("Result:"+result);
+		} catch(Exception e) {
+			System.out.println(" i take care");
+		}
+		System.out.println("bye...");
+		
+		
+
+	}
+
+}
+
+
+output:
+hello
+ i take care
+bye...

@@ -1,0 +1,47 @@
+package com;
+import java.util.*;
+
+public class main {
+	interface Firstinterface
+	{
+		public default void display()
+		{
+			System.out.println("Firstinterface invoked");
+		}
+	}
+	
+	interface Secondinterface
+	{
+		public default void display()
+		{
+			System.out.println("Secondinterface invoked");
+		}
+	}
+	
+	public class DemoClass implements Firstinterface,Secondinterface
+	{
+		public void display()
+		{
+			Firstinterface.super.display();
+			Secondinterface.super.display();
+		}
+	}
+		
+	
+	
+	
+
+	public static void main(String args[]) {
+		DemoClass obj = new DemoClass();
+		obj.display();
+
+	}
+}
+
+
+
+output:
+Firstinterface invoked
+Secondinterface invoked
+
+

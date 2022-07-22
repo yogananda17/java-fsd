@@ -1,0 +1,155 @@
+
+\\THROW
+
+
+
+package com;
+
+public class Throw {
+	static void main()
+	{
+		try
+		{
+			throw new NullPointerException(" demo ");
+		}
+		catch(NullPointerException e)
+		{
+			System.out.println("caught inside main().");
+			throw e; 
+		}
+	}
+
+	public static void main(String[] args) {
+		try
+		{
+			main();
+		}
+		catch(NullPointerException e)
+		{
+			System.out.println("caught in main");
+		}
+		
+
+	}
+
+}
+
+output:
+caught inside main().
+caught in main
+
+
+
+
+
+
+
+\\THROWS
+package com;
+
+public class Throws {
+
+		static void main() throws IllegalAccessException
+		{
+			System.out.println("Inside main(). ");
+			throw new IllegalAccessException("demo");
+		}
+		
+			
+
+		
+
+
+	public static void main(String[] args) {
+		try
+		{
+			main();
+		}
+		catch(IllegalAccessException e)
+		{
+			System.out.println("caught in main");
+		}
+		
+
+	}
+
+}
+
+
+output:
+Inside main(). 
+caught in main
+
+
+
+\\finally
+package com;
+import java.io.*;
+
+public class main {
+
+	public static void main(String[] args) {
+		try {
+			System.out.println("try block");
+			
+			System.out.println(34/0);
+		}
+		
+		catch(ArithmeticException e) {
+			
+			System.out.println("catch : exception handled.");
+		}
+		finally {
+			System.out.println("finally : i executed. ");
+		}
+		
+		
+		
+
+	}
+
+}
+
+
+output:
+try block
+catch : exception handled.
+finally : i executed. 
+
+
+
+\\custom
+package com;
+class MyException extends Exception
+{
+	public MyException(String a)
+	{
+	
+
+	super(a);
+    }
+}
+public class custom {
+
+	public static void main(String[] args) {
+		try
+		{
+			throw new MyException("temp");
+		}
+		catch(MyException ex)
+		{
+			System.out.println("caught");
+			System.out.println("ex.getMsg()");
+		}
+		
+
+	}
+
+}
+
+
+output:
+caught
+ex.getMsg()
+
+

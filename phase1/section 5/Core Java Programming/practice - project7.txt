@@ -1,0 +1,76 @@
+//maps
+
+package com;
+import java.util.*;
+
+
+
+
+public class maps {
+
+	   public static void main(String[] args) {
+		   //Hashmap
+			HashMap<Integer,String>Hm=new HashMap<Integer,String>();
+			Hm.put(1,"jerry");
+			Hm.put(2,"tom");
+			Hm.put(3,"harry");
+			Hm.put(4,"ravi");
+			
+			System.out.println("\nelements of Hashmap are");
+			for(Map.Entry m:Hm.entrySet()){
+			System.out.println(m.getKey()+" "+m.getValue());
+			}
+		
+
+	
+		
+		
+	
+	//HashTable
+	
+	Hashtable<Integer,String>Ht=new Hashtable<Integer,String>();
+	
+	Ht.put(5, "hari");
+	Ht.put(6, "kiran");
+	Ht.put(7, "jack");
+	
+	System.out.println("\nelements of HashTable are");
+	for(Map.Entry n:Ht.entrySet()){
+	
+	System.out.println(n.getKey()+" "+n.getValue());
+	}
+	
+	
+	//treemap
+	TreeMap<Integer,String> map=new TreeMap<Integer,String>();
+	map.put(8,"rakesh");
+	map.put(9,"rose");
+	map.put(10,"eren");
+	
+	System.out.println("\nelements of TreeMap are");
+	for(Map.Entry a:map.entrySet()) {
+	System.out.println(a.getKey()+""+a.getValue());	
+		
+	}
+	   }
+}
+	
+	
+
+output:
+elements of Hashmap are
+1 jerry
+2 tom
+3 harry
+4 ravi
+
+elements of HashTable are
+7 jack
+6 kiran
+5 hari
+
+elements of TreeMap are
+8rakesh
+9rose
+10eren
+

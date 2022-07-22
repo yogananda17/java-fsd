@@ -1,0 +1,11 @@
+AIM:To write a program to read,write, and append to a file
+
+
+ALOGORITHM:
+STEP1:Start the programm
+STEP2:we have to create a floder in that we create text document
+STEP3:after that check text document is created or not.
+STEP4:after we have to read to a file
+STEP5:Write to a file.
+STEP6:Append to a file.
+STEP7:Stop the program

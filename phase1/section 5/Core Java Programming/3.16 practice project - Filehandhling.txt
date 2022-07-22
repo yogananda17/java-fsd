@@ -1,0 +1,159 @@
+//creating a file
+package com;
+
+import java.io.File;
+import java.io.IOException;
+
+public class CreateFileDemo {
+
+	public static void main(String[] args) {
+		File myFile = new File("data1.txt");
+		
+		
+		try {
+			if(myFile.createNewFile()) {
+				System.out.println("file created successfully");
+			}
+			else {
+				System.out.println("file creation error.");
+			}
+		} catch (IOException e) {
+			System.out.println("file error....");
+		}
+	}
+
+}
+
+
+//read
+package P1;
+
+import java.io.FileReader;
+import java.io.IOException;
+
+public class FileReadDemo {
+
+	public static void main(String[] args) {
+		char[] data = new char[50];
+		try {
+		    FileReader input = new FileReader("data1.txt");
+		    input.read(data);
+		    System.out.println("data received fram a file.");
+		    System.out.println(data);
+		    input.close();
+		    
+		} catch (IOException ex) {
+			System.out.println("File read error....");
+		}
+	}
+
+}
+
+
+
+//write
+package com;
+
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class FileWriteDemo {
+
+	public static void main(String[] args) {
+		String data = "1, raju, tamilnadu, chennai, india.";
+		
+		try {
+			FileWriter output = new FileWriter("data1.txt");
+			output.write(data);
+			System.out.println("data is written successfully");
+			output.close();
+			
+		} catch(IOException ex) {
+			System.out.println("file write error...");
+		}
+	}
+
+}
+
+
+
+//append
+package P1;
+
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class FileAppendDemo {
+
+	public static void main(String[] args) {
+		String data = "data is appended..";
+		try {
+		    FileWriter output = new FileWriter("data1.txt",true);
+		    output.write(data);
+		    System.out.println("data append successfully.");
+		    output.close();
+		} catch (IOException ex) {
+			System.out.println("file append error...");
+		}
+				
+				
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com;
+
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class FileWriteDemo {
+
+	public static void main(String[] args) {
+		String data = "1, raju, tamilnadu, chennai, india.";
+		
+		try {
+			FileWriter output = new FileWriter("data1.txt");
+			output.write(data);
+			System.out.println("data is written successfully");
+			output.close();
+			
+		} catch(IOException ex) {
+			System.out.println("file write error...");
+		}
+	}
+
+}
