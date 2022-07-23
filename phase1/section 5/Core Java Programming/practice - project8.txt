@@ -1,0 +1,59 @@
+package com;
+
+public class innerclassassisted {
+	private String message = "hello";
+	class inner{
+		void welcome() {System.out.println(message+",welcome to java programming");}
+		
+	}
+
+	public static void main(String[] args) {
+		innerclassassisted obj = new innerclassassisted();
+		innerclassassisted.inner in = obj.new inner();
+		in.welcome();
+		
+
+	}
+
+}
+
+
+output:
+ello,welcome to java programming
+
+
+
+//anonymous innerclass
+package com;
+abstract class anonymousinnerclass {
+	public abstract void display();
+}
+public class innerclassassisted {
+	
+
+
+
+	public static void main(String[] args) {
+		anonymousinnerclass i =new anonymousinnerclass() {
+			
+			public void display() {
+				System.out.println("anonymous class");
+
+			
+				
+			}
+			
+			
+		};
+		i.display();
+		
+		
+
+	}	
+}
+
+
+	
+
+output:
+anonymous class

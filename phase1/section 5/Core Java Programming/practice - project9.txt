@@ -1,0 +1,26 @@
+package com;
+
+public class main {
+
+	public static void main(String[] args) {
+String str = "hello";
+		
+		StringBuffer sb = new StringBuffer(str);
+		sb.reverse();
+		
+		System.out.println(sb);
+		
+		StringBuilder sb1 = new StringBuilder(str);
+		
+		sb1.append("welcome to java");
+		
+		System.out.println(sb1);
+		
+
+	}
+
+}
+
+output:
+olleh
+hellowelcome to java
