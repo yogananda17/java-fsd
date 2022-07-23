@@ -1,3 +1,5 @@
+
+//CLASSES AND OBJECTS
 package com;
 
 public class Dog {
@@ -81,49 +83,155 @@ output:
 
 
 
+//inheritance
 package com;
-
-public class main {
-	         class Employee{ 
-		 float salary=100000;  
-		}  
-	     class Programmer extends Employee{  
-		 int bonus=1000;
-
-	public static void main(String args[]) {
-		   Programmer a=new Programmer();  
-		   System.out.println("Programmer salary is:"+a.salary);  
-		   System.out.println("Bonus of Programmer is:"+a.bonus); 
-	}
-		
-	}
-
+class animal {
+	void eat() {System.out.println("i can eat");}
+}
+class Dog extends animal{
+	void bark() {System.out.println("i can bark");}
 }
 
-output:
-Programmer salary:100000.0
-Bonus of Programmer is:1000
-
-abstract class car{
-		abstract void run();
-	}
-	class pulser extends car{
-		void run() {
-			System.out.println("saftey car");
-		}
-	}
+public class inheritance {
 
 	public static void main(String[] args) {
-	    car obj = new car();
-		obj.run();
-		
+		Dog d = new Dog();
+		d.eat();
+		d.bark();
 
 	}
 
 }
 
 output:
-saftey car
+i can eat
+i can bark
+
+
+
+
+//encapsulation
+package com;
+class encapsulationtest {
+	private String name;
+	private int id;
+	private int age;
+	
+	public int getid() {
+		return id;
+	}
+	
+	public String getname() {
+		return name;
+	}
+	
+	public int getage() {
+		return age;
+	}
+	
+	public void setage(int newage) {
+		age = newage;
+	}
+	public void setname(String newname)
+	{
+		name = newname;
+	}
+	
+	public void setid(int newid) {
+		id = newid;
+	}
+	
+	
+	
+}
+
+public class encapsulation {
+
+	public static void main(String[] args) {
+		encapsulationtest ob = new encapsulationtest();
+		ob.setname("harry");
+		ob.setid(20);
+		ob.setage(21);
+		
+		System.out.println("name:"+ob.getname());
+		System.out.println("id:"+ob.getid());
+		System.out.println("age:"+ob.getage());
+		
+		
+		
+
+	}
+
+}
+
+
+output:
+name:harry
+id:20
+age:21
+
+
+
+//abstaction
+package com;
+abstract class shape {
+	String colour;
+	abstract double area();
+	public abstract String toString();
+	
+	public shape(String colour)
+	{
+		System.out.println("Shape");
+		this.colour = colour;
+	}
+	public String getcolour() {
+		return colour;
+	}
+}
+
+class Rectangle extends shape {
+	double length;
+	double width;
+	public Rectangle(String colour, double length, double width) {
+		
+		super(colour);
+		System.out.println("Rectangle");
+		this.length = length;
+		this.width = width;
+		}
+	@Override double area() {
+		return length * width;
+	}
+	@Override public String toString()
+	
+	{
+		return "Rectangle colour is " + super.getcolour() +"and area is :"+area();
+	}
+}
+ 
+
+
+public class main {
+
+	public static void main(String[] args) {
+		shape s1 = new Rectangle("green", 4,6);
+		System.out.println(s1.toString());
+
+	}
+
+}
+
+output:
+Shape
+Rectangle
+Rectangle colour is greenand area is :24.0
+
+
+
+
+
+
+
 
 
 
