@@ -1,0 +1,79 @@
+package com;
+import java.io.*;
+
+public class main {
+	static void printMatrix(int M[][], int rowsize, int colsize, int j) {
+		for(int i=0; i<rowsize;i++) {
+			System.out.println(M[i][j] + " ");
+		System.out.println();	
+		}
+	}
+	
+	static void matrixmultiply (int row1, int col1, int a[][], int row2, int col2, int b[][]) {
+		int i,j,p;
+		
+		System.out.println("\nmatrix a:");
+		printMatrix(a, row1, col1, 0);
+		System.out.println("\nmatrix b:");
+		printMatrix(b, row2, col2, 0);
+		
+		if(row2 != col1) {
+			System.out.println("matrix not possible");
+			return;
+		}
+		int c[][]=new int[row1][col2];
+		for(i=0;i<row1;i++) {
+			for(j=0;j<col2;j++) {
+				for (p=0;p<row2;p++)
+					c[i][j] +=a[i][p]*b[p][j];
+			}
+		}
+		System.out.println("result matrix:");
+		printMatrix(c,row1,col2, 0);
+	}
+
+
+	
+	
+
+	public static void main(String[] args) {
+		int row1=3,col1=3,row2=3,col2=3;
+		int a[][]= { {1,2,3},
+				     {6,5,4},
+				     {9,8,7} };
+		int b[][]= { {2,3,1},
+				     {2,6,5},
+				     {5,6,4} };
+		
+		matrixmultiply(row1, col1, a, row2,col2, b);
+		}
+		
+
+	}
+
+
+
+
+//output:
+matrix a:
+1 
+
+6 
+
+9 
+
+
+matrix b:
+2 
+
+2 
+
+5 
+
+result matrix:
+21 
+
+42 
+
+69 
+

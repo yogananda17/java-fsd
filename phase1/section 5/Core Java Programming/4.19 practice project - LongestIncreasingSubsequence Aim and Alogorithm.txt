@@ -1,0 +1,12 @@
+Aim:To Write a Program to find Longest Increasing Subsequence.
+
+
+Alogorithm:
+Step1:Start the Program
+Step2:Assign p = 0.
+Step3:check for loop and assign j=0.
+Step4:If j=pos then break
+Step5:select Scanner to enter input from keyboard
+Step6:enter the no of elements 
+Step7:check for loop
+Step8:stop the program

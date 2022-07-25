@@ -1,0 +1,99 @@
+package com;
+
+
+import java.util.Scanner;
+
+
+public class LongestIncreasingSubsequence {
+	public int[] lis(int[] b)
+	{
+		int n = b.length-1;
+		int[] X = new int[n + 1];
+		int[] Y = new int[n + 1];
+		int P = 0;
+		
+		for(int i=1;i<n+1;i++) {
+			int j =0;
+			
+			for(int pos = P; pos >= 1; pos--) {
+				if(b[X[pos]] < b[i]) {
+					j = pos;
+					break;
+					
+				}
+			}
+			Y[i] = X[j];
+			if(j==P || b[i] < b[X[j+1]]) {
+				X[j+1] = i;
+				P = Math.max(P,j + 1);
+			}
+		}
+		
+		int [] output = new int[P];
+		int pos = X[P];
+		for(int i=P-1;i>=0;i--) {
+			output[i] = b[pos];
+			pos = Y[pos];
+		}
+		return output;
+		
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Longest Increasing Subsequence");
+		System.out.println("enter no of elements");
+		int n=sc.nextInt();
+		int[] arr =new int[n+1];
+		System.out.println("enter "+ n + " elements");
+		for (int i=1;i<=n;i++)
+			arr[i]= sc.nextInt();
+		LongestIncreasingSubsequence obj = new LongestIncreasingSubsequence();
+		int[] output = obj.lis(arr);
+		
+		System.out.println("Longest Increasing Subsequence:");
+		for(int i=0;i<output.length;i++)
+			System.out.println(output[i]+" ");
+		System.out.println();
+		
+		
+		
+		
+		
+		
+		
+
+	}
+
+}
+
+
+//output:
+Longest Increasing Subsequence
+enter no of elements
+
+15
+enter 15 elements
+0
+8
+6
+9
+2
+15
+12
+6
+11
+13
+10
+1
+7
+17
+19
+Longest Increasing Subsequence:
+0 
+2 
+6 
+11 
+13 
+17 
+19 
