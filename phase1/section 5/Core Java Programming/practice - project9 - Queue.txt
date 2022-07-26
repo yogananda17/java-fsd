@@ -1,0 +1,30 @@
+package com;
+import java.util.Queue;
+import java.util.LinkedList;
+
+public class main {
+
+	public static void main(String[] args) {
+		Queue<Integer> nums=new LinkedList();
+		nums.offer(10);
+		nums.offer(20);
+		nums.offer(50);
+		nums.offer(106);
+		nums.offer(104);
+		System.out.println("Queue: "+nums);
+		
+		int removedNumber=nums.poll();
+		System.out.println("removed elements:"+removedNumber);
+		System.out.println("Queue after deletion:"+nums);
+		
+	
+
+	}
+
+}
+
+
+//output:
+Queue: [10, 20, 50, 106, 104]
+removed elements:10
+Queue after deletion:[20, 50, 106, 104]

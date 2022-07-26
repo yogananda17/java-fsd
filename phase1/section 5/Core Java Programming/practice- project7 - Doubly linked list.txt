@@ -1,0 +1,99 @@
+package com;
+
+public class DoublyLinkedList {
+	Node head;
+	class Node {
+		int d;
+		Node prev;
+		Node next;
+		Node(int a) {
+			d = a;
+		}
+	}
+	public void push(int new_d) {
+		Node new_Node=new Node(new_d);
+		new_Node.next=head;
+		new_Node.prev=null;
+		if(head!=null)
+			head.prev=new_Node;
+		head=new_Node;
+	}
+	public void InsertionAfter(Node prev_Node,int new_d) {
+		if(prev_Node==null) {
+			System.out.println("cannot null");
+			return;
+			}
+		    Node new_node = new Node(new_d);
+		    new_node.next=prev_Node.next;
+		    prev_Node.next=new_node;
+		    new_node.prev=prev_Node;
+		    if(new_node.next!=null)
+		    	        new_node.next.prev=new_node;
+	}
+	void append(int new_data) {
+		
+		Node new_node = new Node(new_data);
+		Node last = head;
+		new_node.next=null;
+		if(head == null) {
+			new_node.prev = null;
+			head=new_node;
+			return;
+		}
+		while(last.next!=null)
+			         last=last.next;
+		last.next=new_node;
+		new_node.prev=last;
+	
+}
+	public void printlist(Node node) {
+		Node last=null;
+		System.out.println("traversal in forward direction");
+		while(node!=null)
+		{
+			System.out.print(node.d+" ");
+			last=node;
+			node=node.next;
+			
+		}
+		System.out.println();
+		System.out.println("traversal in reverse direction");
+		while(last!=null)
+		{
+			System.out.println(last.d+" ");
+			last=last.prev;
+			
+		}
+	}
+	
+
+	
+
+	public static void main(String[] args) {
+		DoublyLinkedList list=new DoublyLinkedList();
+		list.append(6);		
+		list.append(2);	
+		list.append(5);	
+		list.append(1);	
+		list.append(9);
+		list.InsertionAfter(list.head.next, 3 );
+		System.out.println("created list is:");
+		list.printlist(list.head);
+		
+
+	}
+
+}
+
+
+//output:
+created list is:
+traversal in forward direction
+6 2 3 5 1 9 
+traversal in reverse direction
+9 
+1 
+5 
+3 
+2 
+6 
