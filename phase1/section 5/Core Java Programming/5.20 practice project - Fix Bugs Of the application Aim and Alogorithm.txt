@@ -1,0 +1,17 @@
+Aim: To Fix the Bugs in the application using the appropriate algorithmic techniques.
+
+
+Algorithm:
+Step1:Start the program.
+Step2:Give import java.util.Scanner; package to give the input from keyboard.
+Step3:Give import java.util.ArrayList;
+Step4:By using for loop display all the Strings mentioned in String Array.
+Step5:Enter options which case want to execute.
+Step6:Add Scanner to take input from keyboard to enter the expenses to search.
+Step7:Sort the given ArrayList in ascending order by using Collections.sort(expenses);
+Step8:Run the program and enter your choice 
+Step9:If enter invalid choice it return you have made an invalid choice.
+Step10:stop the Program.
+
+
+
