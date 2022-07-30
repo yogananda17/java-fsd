@@ -1,0 +1,144 @@
+package com;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Scanner;
+
+public class main {
+
+	public static void main(String[] args) {
+		
+			
+		File myFile = new File("C:\\assessment");
+		
+		myFile.mkdirs();
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		
+		while(true) {
+			System.out.println("\"****Welcome to virtual key for your repository application*****\n"
+				               + "...... this application was developed by yogananda.......\n");
+			System.out.println("....following functions are......\n");
+			System.out.println("1. to display the files in ascending order");
+			System.out.println("2. user specified operations");
+			System.out.println("3. close the application");
+			
+			System.out.println(".....what option to be performed.....");
+			
+			
+			int choice = scanner.nextInt();
+			switch(choice) 
+			{
+			case 1: 
+				File arr[] = myFile.listFiles();
+				Arrays.sort(arr);
+				
+				for(int i =0;i<arr.length;i++)
+					System.out.println(arr[i]);
+				break;
+				
+				
+			case 2:
+				Boolean temp = true;
+				while(temp) {
+				
+				
+					System.out.println("1: to add a file in the existing directory");
+					System.out.println("2: to delete a file from the existing Directory");
+					System.out.println("3: to search a user specified file from the Directory");
+					
+					System.out.println("4: back to the previous menu");
+					
+					
+					int choice1 = scanner.nextInt();
+					
+					switch(choice1) {
+					case 1: 
+						/*File myFile1 = new File("C:\assessment");*/
+						System.out.println("enter a file");
+						String name = scanner.next();
+						if(new File(myFile,name).exists()) {
+							System.out.println("file added successfully");
+						} else {
+							File myFile1 = new File(myFile,name);
+							myFile1.mkdir();							
+							if(new File(myFile,name).exists());
+							  System.out.println("file added successfully");
+							}
+						break;
+						
+						
+					case 2:
+						System.out.println("enter a file name");
+						String name1 = scanner.next();
+						boolean myFile2 = new File(myFile, name1).exists();
+						System.out.println("myFile2");
+						if(myFile2 == true) {
+							File myFile3 = new File(myFile, name1);
+							myFile3.delete();
+							System.out.println("file successfully deleted");
+		                 }else {
+		                	 System.out.println("files does not exist");
+		                 }
+						break;
+						
+					case 3:
+						System.out.println("enter a File to search");
+						String search = scanner.next();
+						
+						File arr1[] = myFile.listFiles();
+						for(int a=0;a<arr1.length;a++) {
+							if(arr1[a].getName().startsWith(search)) {
+								System.out.println(arr1[a]);
+							}else {
+								System.out.println("no file founded");
+								
+							}
+						}
+						break;
+						
+					case 4:
+						temp = false;
+						break;
+						
+						
+					case 5:
+						System.out.println("close application");
+						System.exit(0);
+						
+					default:
+						System.out.println("retry");
+					}
+				}
+				break;
+				
+			case 3:
+				System.out.println("close application");
+				System.exit(0);
+				
+				
+			default:
+				System.out.println("retry");
+				break;
+						
+					
+							
+					
+					
+					
+				}
+			}
+			
+			
+			}
+		}
+
+	
+
+	
+
+	
+

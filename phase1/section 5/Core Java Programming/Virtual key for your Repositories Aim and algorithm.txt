@@ -1,0 +1,62 @@
+Project and Development details:
+Project Name:Virtual Key for Your Repositories
+*This project is going to perform File Handling Operations.
+* To allow user Specified operations
+*displaying the files or folders in ascending order.
+*add or delete file or folder.
+*search for a file or folder.
+
+
+*Sprints planned and the Tasks achieved in them:
+The project is planned in two Sprints.
+
+Sprint1:
+*Tasks achieved in this Sprint
+*Development of the project by using File handling operations and looping control 
+->user can view the files in acsending order
+->user specified operations 
+-> user can add a file in existing directory 
+-> user can delete a file from the existing directory
+->user can search for a file from the directory 
+-> user can return to the previous menu 
+-> close the application after completion of all operations
+->Tested the project on various kinds of inputs
+
+
+Sprint2:
+*Tasks achieved in this Sprint
+->Tested the project on various kinds of inputs
+->created a git Repository
+->And project pushed to my git Repository.
+
+
+
+*Aim:write a program in java to create virtual key for your repositories
+
+
+*Algorithm:
+Step 1:Start the program
+Step 2:Give pakage import java.io.File
+Step 3:Give Scanner to take input from keyboard
+Step 4:use while condition to perform the functions
+Step 5:use Switch case 
+Step 6:First sort the files in ascending order
+Step 7:perform user specified operations
+Step 8:perform add,delete and search operations
+Step 9:If enter wrong input display retry
+Step 10:stop the program.
+
+*core concepts used in this project:
+->performed File handling operations
+->sorting techniques
+
+
+
+
+
+
+
+
+
+
+
