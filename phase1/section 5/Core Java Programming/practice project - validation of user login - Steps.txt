@@ -1,0 +1,14 @@
+Aim:To Create a sevlet - based application that shows a login page and validates it.
+
+
+Algorithm:
+Step1:Start the program 
+Step2:create dynamic web page
+Step3:create html program
+Step4:enter input type email,password and submit
+Step5:create loginservlet
+Step6:enter email and password details
+Step7:create Homeservlet
+Step8:if email and password are correct it display welcome username successfully logined
+Step9:After that logout
+Step10:stop program
