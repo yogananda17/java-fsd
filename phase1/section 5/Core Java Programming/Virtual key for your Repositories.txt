@@ -57,7 +57,7 @@ public class main {
 					
 					switch(choice1) {
 					case 1: 
-						/*File myFile1 = new File("C:\assessment");*/
+						/*File myFile1 = new File("C:\\assessment");*/
 						System.out.println("enter a file");
 						String name = scanner.next();
 						if(new File(myFile,name).exists()) {

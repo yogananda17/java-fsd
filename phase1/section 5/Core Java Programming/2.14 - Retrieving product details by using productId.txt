@@ -1,0 +1,118 @@
+index.html
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<form action="./FindProduct">
+<table>
+    <tr>
+        <td>Enter the productId:</td>
+        <td><input type="text" name="productId"></td>
+    </tr>
+    <tr>
+    <td colspan="2"><input type="submit" value="search"> </td>
+    </tr>
+</table>    
+</form>
+
+</body>
+</html>
+
+
+FindProduct.java
+
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+
+/**
+ * Servlet implementation class productSearch
+ */
+public class FindProduct extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public FindProduct() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @param productId 
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+    
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		PrintWriter out = response.getWriter();
+		String productId = request.getParameter("productId");
+		out.print("<h1>Display the productDetails</h1>");
+		out.print("<table border='1'><tr><th>productId</th><th>productName</th><th>productValue</th></tr>");
+		
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/productDetails", "root", "root@123");
+			Statement stmt=con.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from productDetails where productId="+productId+"");
+		
+			while(rs.next()) {
+				out.print("<td>");
+				out.println(rs.getInt(1));
+				out.print("</td>");
+				out.print("<td>");
+				out.print(rs.getString(2));
+				out.print("</td>");
+				out.print("<td>");
+				out.print(rs.getFloat(3));
+				out.print("</td>");
+				
+				
+			} 
+				
+			
+		} catch (Exception e){
+			System.out.println(e);
+			
+		}
+		out.print("</table>");
+	}
+
+		
+			
+			
+		
+			
+	
+
+	
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//doGet(request, response);
+	}
+
+}

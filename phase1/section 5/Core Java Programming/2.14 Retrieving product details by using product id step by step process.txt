@@ -1,0 +1,18 @@
+
+
+
+
+Aim:Create a servlet based application to retriveing the product details using the product ID.
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:First create a database in mysql command line client
+Step 3:create a table for database 
+Step 4:insert values into table
+Step 5:create a Dynamic web project
+Step 6:create a html code and enter input type = text and name = productId
+Step 7:create a servlet java program
+Step 8:connect to mysql 
+Step 9:by using query we have retrive the details
+Step 10:stop program
