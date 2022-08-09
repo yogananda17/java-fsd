@@ -1,0 +1,14 @@
+Aim:Create a servlet based application to Add a new product in the database
+
+
+Algorithm:
+Step 1:start the program
+Step 2:create a class 
+Step 3:enter the product entity
+Step 4:create a servlet
+Step 5:create another class with name productdao
+Step 6:create a html page 
+Step 7:create another html page to add product into database
+Step 8:add dependencies in pom file and make version 11
+Step 9:create hibernate.cfg.xml
+Step 10:stop the program

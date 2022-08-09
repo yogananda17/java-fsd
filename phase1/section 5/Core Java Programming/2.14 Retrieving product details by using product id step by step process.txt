@@ -1,5 +1,7 @@
 
 
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
 
 
 Aim:Create a servlet based application to retriveing the product details using the product ID.
