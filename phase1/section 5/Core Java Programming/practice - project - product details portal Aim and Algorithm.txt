@@ -1,0 +1,16 @@
+
+Git Url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+Aim:to create a servlet based application that shows a form to enter product details.
+
+
+
+Algorithm:
+Step1:start the program
+Step2:create jsp file action=addProductDetails.
+Step3:create another jsp file create ArrayList
+Step4:add listofproduct in arraylist
+Step5:print product details
+Step6:stop program
+ 
