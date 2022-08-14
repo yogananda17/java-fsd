@@ -1,0 +1,41 @@
+git URL:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+Project details:
+project Name:Flyaway(An Airline Booking Portal)
+* As a Full Stack Developer, design and develop an airline booking portal named as FlyAway.
+* A search form in the homepage to allow entry of travel details.
+* Based on the travel details entered, it will show the available flights with their ticket prices.
+
+*Sprints planned and the Tasks achieved in them:
+The project is planned in two Sprints.
+
+Sprint1:
+*Tasks achieved in this Sprint
+*Design and develop an airline booking portal
+->A search form in the homepage to allow entry of travel details.
+->Based on the travel details entered, it will show the available flights with their ticket prices.
+->Click on book flight and add details of passenger and click on procced and make payment.
+->After completion of payment it shows payment successfully completed and can view ticket.
+
+
+Sprint2:
+*Tasks achieved in this Sprint
+->Tested the project on various kinds of inputs
+->created a git Repository
+->And project pushed to my git Repository.
+
+Aim:As a Full Stack Developer, design and develop an airline booking portal named as FlyAway.
+
+Algorithm:
+Step 1: start the program
+Step 2:create database flight_booking.
+Step 3:create class
+Step 4:create servlets
+Step 5:create jsp and Html files.
+Step 6:run the program
+Step 7:search for flight and start booking by giving details.
+Step 8:make payment
+Step 9:logout
+Step 10:stop the program.
+

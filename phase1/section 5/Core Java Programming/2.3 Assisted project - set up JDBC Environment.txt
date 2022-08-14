@@ -1,0 +1,247 @@
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Login Page</h2>
+<form action="LoginController" method="get">
+    <label>EmailId</label>
+    <input type="email" name="emailid"><br/>
+    <input>Password</label>
+    <input type="password" name="password"><br/>
+    <input type="submit" value="submit"/>
+    <input type="reset" value="reset"/>
+</form>
+<br/>
+<a href="signUp.html">SignUp</a>
+
+</body>
+</html>
+
+//signUp.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Account Create</h2>
+<form action="LoginController" method="post">
+    <label>EmailId</label>
+    <input type="email" name="emailid"><br/>
+    <label>Password</label>
+    <input type="password" name="password"><br/>
+    <input type="submit" value="submit"/>
+    <input type="reset" value="reset"/>
+</form>
+<a href="index.html">Login Page</a>
+
+</body>
+</html>
+
+//home.java
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class Home
+ */
+public class Home extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Home() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		PrintWriter pw = response.getWriter();
+		HttpSession hs = request.getSession();
+		//String emailid = (String)request.getAttribute("obj");
+		String emailid = (String)hs.getAttribute("obj");
+		pw.println("welcome to Home page"+emailid);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//doGet(request, response);
+	}
+
+}
+
+
+//loginController.java
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class LoginController
+ */
+public class LoginController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public LoginController() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		PrintWriter pw = response.getWriter();
+		
+		response.setContentType("text/html");
+		
+		String emailid = request.getParameter("emailid");
+        String password = request.getParameter("password");
+        RequestDispatcher rd1 = request.getRequestDispatcher("");
+        RequestDispatcher rd2 = request.getRequestDispatcher("index.html");
+        HttpSession hs = request.getSession();
+		
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/javatraining", "root", "root@123");
+			PreparedStatement pstmt = con.prepareStatement("select * from login where emailid=? and password = ?");
+			pstmt.setString(1,  emailid);
+			pstmt.setString(2, password);
+			
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()) {
+				//pw.println("successfully login");
+				hs.setAttribute("obj",emailid);
+				//rd1.forward(request, response);
+				response.sendRedirect("Home");
+				
+			} else {
+				pw.println("failure try once again");
+				rd2.include(request, response);
+			}
+		} catch (Exception e){
+			System.out.println(e);
+			
+		}
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//doGet(request, response);
+		
+		PrintWriter pw = response.getWriter();
+		response.setContentType("text/html");
+		String emailid = request.getParameter("emailid");
+		String password = request.getParameter("password");
+		RequestDispatcher rd1 = request.getRequestDispatcher("index.html");
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/javatraining", "root", "root@123");
+			PreparedStatement pstmt = con.prepareStatement("insert into login values(?,?)");
+			pstmt.setString(1,  emailid);
+			pstmt.setString(2,  password);
+			int res = pstmt.executeUpdate();
+			if(res>0) {
+				pw.println("Account created successfully ");
+				
+			} 
+		} catch (Exception e){
+			System.out.println(e);
+			pw.println("Account didn't create, Email Id must be unique");
+			
+		}
+		rd1.forward(request, response);
+	}
+	}
+
+//logout.java
+package com;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class Logout
+ */
+public class Logout extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Logout() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		HttpSession session = request.getSession();
+		session.invalidate();
+		response.sendRedirect("index.html");
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//doGet(request, response);
+		HttpSession session = request.getSession();
+		session.invalidate();
+		response.sendRedirect("index.html");
+	}
+
+}
