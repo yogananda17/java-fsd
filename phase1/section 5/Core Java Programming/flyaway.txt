@@ -1,0 +1,3148 @@
+ActivityController:
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+
+/**
+ * Servlet implementation class ActivityControllerServlet
+ */
+public class ActivityController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    private BookingDb bookingDb;
+	
+	
+	@Resource(name="jdbc/flight_booking")
+	private DataSource dataSource; // Creating handle
+
+	
+	
+	@Override 
+	public void init() throws ServletException {
+		// TODO Auto-generated method stub
+		super.init();
+		
+		try {
+			bookingDb  = new BookingDb(dataSource);
+		}
+		catch (Exception e){
+			throw new ServletException(e) ;
+	    }
+	  }
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		try { 
+			
+			
+			 HttpSession session=request.getSession(false);
+			 RequestDispatcher rd=null;
+			 PrintWriter out=response.getWriter();
+			 
+			 if(session==null) {
+				 System.out.println("User not logged in!");
+			    	rd=request.getRequestDispatcher("login.html");			
+					rd.include(request, response); 
+					out.println("<script>document.getElementsById('loginalert').innerHTML='Please Login to Continue'; </script>");
+			 }
+         
+			String theCommand = request.getParameter("command");
+			
+			
+		    switch(theCommand){
+		    
+		    case "ORDERS":
+		    	viewOrderDetails(request,response);
+		    	break;
+		    case "DETAILS":
+		    	viewUserDetails(request,response);
+		        break;  			        
+		    default:
+		    	System.out.println("Coudn't find COMMAND Param value");		
+		    	break;
+		    }	
+		    
+		} catch (Exception e) {
+			System.out.println("Exception: "+e);
+		}
+	}
+
+	private void viewUserDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		RequestDispatcher rd= request.getRequestDispatcher("user_details.jsp");	
+		rd.forward(request, response);
+	}
+
+	private void viewOrderDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		HttpSession session=request.getSession(false);
+		
+		String email= (String) session.getAttribute("user_email");
+		
+		List<BookingDetails> bd=bookingDb.getOrderDetails(email);
+		request.setAttribute("ORDER_LIST", bd);
+		RequestDispatcher rd= request.getRequestDispatcher("my-orders.jsp");	
+		rd.forward(request, response);
+	}
+		}
+AdminController:
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+
+/**
+ * Servlet implementation class AdminControllerServlet
+ */
+public class AdminController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    private AdminDb adminDb;
+	
+	
+	@Resource(name="jdbc/flight_booking")
+	private DataSource dataSource; 
+	
+	
+	@Override 
+	public void init() throws ServletException {
+		super.init();
+		
+		try {
+			adminDb = new AdminDb(dataSource);
+		}
+		catch (Exception e){
+			throw new ServletException(e) ;
+	    }
+	  }
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		 try {
+	            
+				String theCommand = request.getParameter("command");
+				
+			
+				
+			    switch(theCommand){
+			    
+			    case "CHANGE":
+			    	changePassword(request,response);
+			    	break;
+			    case "VIEWSRCLOC":
+			    	viewSrcLocationList(request,response);
+			        break;
+			    case "VIEWDESTLOC":
+			    	viewDestLocationList(request,response);	
+			    	break;
+			    case "VIEWAIRLINE":
+			    	viewAirlines(request,response);
+			    case "VIEWFLIGHT":
+			    	viewFlights(request,response); 
+			    case "ADDFLIGHT":
+			    	addFlight(request,response);  
+			    default:
+			    	 System.out.println("Invalid Command!");			      
+			    }	
+			    
+			} catch (Exception e) {
+				System.out.println("Exception: "+e);
+			}
+		}
+
+
+	private void addFlight(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String fno = request.getParameter("flightID");
+		String al = request.getParameter("airline");
+		String src = request.getParameter("src");
+		String dest = request.getParameter("dest");
+		String arr = request.getParameter("arr");
+		String dep = request.getParameter("dep");
+		String dur = request.getParameter("dur");
+		String ap = request.getParameter("ap");
+		int dur_min = Integer.parseInt(request.getParameter("dur_min"));
+		int fare = Integer.parseInt(request.getParameter("fare"));
+		int seats = Integer.parseInt(request.getParameter("seats"));
+		int stops = Integer.parseInt(request.getParameter("stops"));
+		adminDb.addFlight(fno,al,src,dest,arr,dep,dur,dur_min,fare,seats,stops,ap);
+		RequestDispatcher rd=request.getRequestDispatcher("admin_flights.jsp");
+		rd.forward(request, response);
+		
+		
+	}
+
+	private void viewFlights(HttpServletRequest request, HttpServletResponse response) throws Exception, IOException{
+		List<Flight> flights = adminDb.getLFlightDetailsList();
+		request.setAttribute("F_LIST", flights);
+		RequestDispatcher rd=request.getRequestDispatcher("admin_flights.jsp");
+		rd.forward(request, response);
+		
+	}
+
+	private void viewAirlines(HttpServletRequest request, HttpServletResponse response) throws Exception, IOException {
+		List<String> airlines = adminDb.getAirlineList();
+		request.setAttribute("AIR_LIST", airlines);
+		RequestDispatcher rd=request.getRequestDispatcher("admin_airlines.jsp");
+		rd.forward(request, response);		
+	}
+
+	private void viewDestLocationList(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		List<String> dest = adminDb.getDestinationLocationList();
+		request.setAttribute("DEST_LIST", dest);
+		RequestDispatcher rd=request.getRequestDispatcher("admin_places_dest.jsp");
+		rd.forward(request, response);
+		
+	}
+
+	private void viewSrcLocationList(HttpServletRequest request, HttpServletResponse response) throws SQLException, Exception, IOException {
+		List<String> src = adminDb.getSourceLocationList();
+		request.setAttribute("SRC_LIST", src);
+		RequestDispatcher rd=request.getRequestDispatcher("admin_available_place.jsp");
+		rd.forward(request, response);
+	}	
+	
+	private void changePassword(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		String oldpassword=request.getParameter("password1");
+		String newpassword=request.getParameter("password2");
+		String username=request.getParameter("username");
+		boolean success=adminDb.changePassword(oldpassword,newpassword,username);
+		RequestDispatcher rd= null;
+		PrintWriter out=response.getWriter();
+		
+		if(success) {
+			System.out.println("Successfully Changed Password");
+			rd= request.getRequestDispatcher("admin-profile.jsp");
+			rd.include(request, response);
+			out.println("<script>document.getElementById('success').innerHTML='Password Changed Successfully!'; </script>");
+	}
+		else {
+			System.out.println("Incorrect Password");
+			rd= request.getRequestDispatcher("admin-profile.jsp");
+			rd.include(request, response);
+			out.println("<script>document.getElementById('error').innerHTML='Incorrect Password!'; </script>");			
+		}
+
+	}
+
+}
+
+AdminController:
+package com;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+
+public class AdminDb {
+	private DataSource dataSource;
+
+	public AdminDb(DataSource theDataSource) {
+		dataSource=theDataSource;
+	}
+
+	 
+	  private void close(Connection myConn, Statement myStmt, ResultSet myRs) {
+     try {
+  	   if(myRs !=null) {
+  		   myRs.close();
+  	   }
+  	   if(myStmt !=null) {
+  		   myStmt.close();
+  	   }
+  	   if(myRs !=null) {
+  		   myRs.close();
+  	   }
+  	   
+     }
+     catch (Exception e){
+  	 e.printStackTrace();
+     }		
+	}
+	  private void executeSQLSafeMode() throws SQLException {
+			Connection myConn = null;
+			Statement myStmt = null;
+			System.out.println("Executing in SQL Safe Mode...");
+					
+			try {
+					myConn = dataSource.getConnection();
+					String sql="SET SQL_SAFE_UPDATES = 1;";
+					myStmt = myConn.prepareStatement(sql);
+					myStmt.execute(sql);
+			}	
+			 finally {
+					close(myConn,myStmt,null);
+					}		
+		}
+
+		private void executeSQLUnsafeMode() throws SQLException {
+			Connection myConn = null;
+			Statement myStmt = null;
+			System.out.println("Executing in SQL UnSafe Mode");
+					
+			try {
+					myConn = dataSource.getConnection();
+					String sql="SET SQL_SAFE_UPDATES = 0;";
+					myStmt = myConn.prepareStatement(sql);
+					myStmt.execute(sql);
+			}	
+			 finally {
+					close(myConn,myStmt,null);
+					}
+			  }
+
+		public List<String> getSourceLocationList() throws SQLException {	
+			
+			//JDBC Objects 
+			Connection myConn = null;
+			Statement myStmt = null;
+			ResultSet myRs = null;
+			 try {	
+					List<String> source=new ArrayList<>();
+					
+							
+							myConn = dataSource.getConnection();
+							String sql="SELECT DISTINCT source_place from flight_details ORDER BY source_place;";
+							
+							myStmt = myConn.createStatement();
+							myRs = myStmt.executeQuery(sql);
+							while(myRs.next())
+							{
+								String temploc = myRs.getString("source_place");
+								source.add(temploc);
+							}
+					
+					       return source;
+				}
+				  finally {
+						//clean up JDBC objects
+							close(myConn,myStmt,null);
+							}
+					  
+			   }
+			     public List<String> getDestinationLocationList() throws SQLException {		
+					
+					List<String> dest=new ArrayList<>();
+					
+							Connection myConn = null;
+							PreparedStatement myStmt = null;
+							ResultSet myRs = null;
+							String pass=null;
+						try {	
+							myConn = dataSource.getConnection();
+							String sql="SELECT DISTINCT destination_place from flight_details ORDER BY destination_place";
+							
+							myStmt = myConn.prepareStatement(sql);
+							myRs = myStmt.executeQuery();
+							while(myRs.next())
+							{
+								String temploc = myRs.getString("destination_place");
+								dest.add(temploc);
+						    }
+					       return dest;
+					
+				   }
+					finally {
+						
+							close(myConn,myStmt,null);
+							}
+				}
+			     
+			     public List<String> getAirlineList() throws SQLException {		
+			 		
+			 		List<String> airlines=new ArrayList<>();
+			 		
+			 				Connection myConn = null;
+			 				PreparedStatement myStmt = null;
+			 				ResultSet myRs = null;
+			 				String pass=null;
+			 			try {	
+			 				myConn = dataSource.getConnection();
+			 				String sql="SELECT DISTINCT airline from flight_details ORDER BY airline";
+			 				
+			 				myStmt = myConn.prepareStatement(sql);
+			 				myRs = myStmt.executeQuery();
+			 				while(myRs.next())
+			 				{
+			 					String temp = myRs.getString("airline");
+			 					airlines.add(temp);
+			 				}
+			 		
+			 		          return airlines;
+			 			}
+			 			finally {
+			 				
+			 					close(myConn,myStmt,null);
+			 					}
+			 	 	}
+			 	     
+			 	     public List<Flight> getLFlightDetailsList() throws SQLException {		
+			 	  		
+			 	  		List<Flight> flights=new ArrayList<>();
+			 	  		
+			 	  				Connection myConn = null;
+			 	  				PreparedStatement myStmt = null;
+			 	  				ResultSet myRs = null;
+			 	  				String pass=null;
+			 	  		try {		
+			 	  				myConn = dataSource.getConnection();
+			 	  				String sql="SELECT * from flight_details";
+			 	  				
+			 	  				myStmt = myConn.prepareStatement(sql);
+			 	  				myRs = myStmt.executeQuery();
+			 	  				while(myRs.next())
+			 	  				{
+			 	  					 String flightNo=myRs.getString("flightNo");
+			 	  					 String airline=myRs.getString("airline");
+			 	  					 String source=myRs.getString("source_place");
+			 	  					 String destination=myRs.getString("destination_place");
+			 	  					 String departure=myRs.getString("departure");
+			 	  					 String arrival=myRs.getString("arrival");
+			 	  					 String duration=myRs.getString("duration");
+			 	  					 int duration_in_min=myRs.getInt("duration_in_min");				 
+			 	  					 String airportName=myRs.getString("airportName");
+			 	  					 int totalStops = myRs.getInt("totalStops");
+			 	  					 int availableSeats=myRs.getInt("availableSeats");
+			 	  					 float fare=myRs.getFloat("fare");
+			 	  					 
+			 	  					
+			 	  					Flight tempFlight = new Flight(flightNo,airline,source,destination,departure,arrival,duration,duration_in_min,airportName,totalStops,availableSeats,fare);
+			 	  						
+			 	  					flights.add(tempFlight);
+			 	  			 }
+			  					
+			  				    return flights;
+			  	        }
+			     
+			     finally {
+						
+							close(myConn,myStmt,null);
+						}
+			     }
+
+				public void addFlight(String fno, String al, String src, String dest, String arr, String dep, String dur,
+						int dur_min, int fare, int seats, int stops,String airport) throws Exception {
+					
+					Connection myConn = null;
+					PreparedStatement myStmt = null;
+						
+					try {		
+						myConn = dataSource.getConnection();	
+							String sql= "INSERT into flight_details (flightNo,airline,source_place,destination_place,departure,arrival,duration,duration_in_min,airportName,totalStops,availableSeats,fare) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+							
+							myStmt= myConn.prepareStatement(sql);
+							
+							myStmt.setString(1,fno);
+							myStmt.setString(2,al);
+							myStmt.setString(3,src);
+							myStmt.setString(4,dest);
+							myStmt.setString(5,dep);		
+							myStmt.setString(6,arr);			
+							myStmt.setString(7,dur);
+							myStmt.setInt(8,dur_min);
+							myStmt.setString(9,airport);
+							myStmt.setInt(10,stops);	
+							myStmt.setInt(11,seats);	
+							myStmt.setInt(12,fare);	
+							
+							myStmt.execute();		
+							System.out.println("SQL DONE 01");		
+						}
+
+				    finally {
+						close(myConn,myStmt,null);
+						System.out.println("SQL DONE 02");
+						}		
+				}
+
+				public boolean changePassword(String oldpassword, String newpassword, String username) throws Exception,SQLException {
+				
+				    Connection myConn = null;
+					PreparedStatement myStmt = null;
+					String sql=null;
+					UserDb udb = new UserDb(dataSource);
+					AdminUser a= new AdminUser(username,oldpassword);
+			     try {
+			    	 
+					String db_password = udb.validateAdminLogin(a);
+					
+					
+					if(!db_password.equals(oldpassword)) {
+						return false;
+					}
+					
+					else {
+						
+						executeSQLUnsafeMode();
+						myConn = dataSource.getConnection();
+						
+					    sql = "UPDATE admin SET a_password=?";
+						
+						myStmt = myConn.prepareStatement(sql);
+						myStmt.setString(1,newpassword);
+						int status =myStmt.executeUpdate();	
+						System.out.println("Update Status: "+status);
+						return true;
+					}
+				  }
+				
+				finally {
+					System.out.println("AT PASSWORD UPDATION");		
+					executeSQLSafeMode();
+					close(myConn,myStmt,null);
+					
+					}		
+				
+			    }
+				
+			} 
+
+AdminUser:
+package com;
+
+public class AdminUser {
+	private String username;
+	private String password;
+	public AdminUser(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+
+}
+
+Booking controller:
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+
+/**
+ * Servlet implementation class BookingControllerServlet
+ */
+public class BookingController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	
+	private BookingDb bookingDb;
+	
+	
+	@Resource(name="jdbc/flight_booking")
+	private DataSource dataSource; 
+
+	
+	
+	@Override 
+	public void init() throws ServletException {
+		// TODO Auto-generated method stub
+		super.init();
+		
+		try {
+			bookingDb = new BookingDb(dataSource);
+		}
+		catch (Exception e){
+			throw new ServletException(e) ;
+	    }
+	  }
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	       try {
+	            
+				String theCommand = request.getParameter("command");
+				
+				
+				
+				if (theCommand==null) {
+					theCommand="HOME";
+				}
+				
+			    switch(theCommand){
+			    
+			    case "HOME":
+			    	viewHomePage(request,response);
+			    	break;
+			    case "SEARCH":
+			    	searchFlight(request,response);
+			        break;
+			    case "BOOK":
+			    	bookFlight(request,response);	
+			    	break;
+			    case "CONFIRM":
+			    	confirmDetails(request,response);
+			    case "EDIT":
+			    	editDetails(request,response);
+			    case "PAY":
+			    	makePayment(request,response);
+			    default:
+			    	viewHomePage(request,response);			      
+			    }	
+			    
+			} catch (Exception e) {
+				System.out.println("Exception: "+e);
+			}
+		}
+	
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+				       try {
+				    	   		     	   
+		            
+					String theCommand = request.getParameter("command");
+					
+					
+					if (theCommand==null) {
+						theCommand="HOME";
+					}
+					
+				    switch(theCommand){
+				    
+				    case "HOME": 
+				    	viewHomePage(request,response);
+				    	break;
+				    case "SEARCH":
+				    	searchFlight(request,response);
+				        break;
+				    case "BOOK":
+				    	bookFlight(request,response);	
+				    	break;
+				    case "CONFIRM":
+				    	confirmDetails(request,response);	
+				    	break;
+				    case "EDIT":
+				    	editDetails(request,response);
+				    case "PAY":
+				    	makePayment(request,response);
+				    default:
+				    	viewHomePage(request,response);			      
+				    }	
+				    
+				} catch (Exception e) {
+					System.out.println("Exception: "+e);
+				}
+	
+	}
+	
+	private void makePayment(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		HttpSession session=request.getSession(false); 
+		BookingDetails order_success=(BookingDetails) session.getAttribute("BookingUserDetail");
+		System.out.println("SUCCESS 1");
+		String src= String.valueOf(session.getAttribute("book_source"));
+		System.out.println("SUCCESS 2");
+		String dest=(String)session.getAttribute("book_dest");
+		System.out.println("SUCCESS 3");
+		String fid=(String) session.getAttribute("book_flightID");
+		System.out.println("SUCCESS 4");
+        float fare=Float.parseFloat((String) session.getAttribute("book_fare"));
+        System.out.println("SUCCESS 5");
+        String aline=(String) session.getAttribute("book_airline");
+        System.out.println("SUCCESS 6");
+        String date = (String) session.getAttribute("book_date");
+        System.out.println("SUCCESS 7");
+        int ppl = Integer.parseInt( (String) session.getAttribute("book_no_of_ppl"));
+        System.out.println("SUCCESS z");
+        
+		bookingDb.saveOrderDetails(order_success,src,dest,fid,fare,aline,date,ppl);  
+		RequestDispatcher dispatcher=request.getRequestDispatcher("payment-success.jsp");
+		dispatcher.forward(request, response);	
+	}
+
+
+	private void editDetails(HttpServletRequest request, HttpServletResponse response) throws IOException, Exception {
+		RequestDispatcher dispatcher;
+		PrintWriter out=response.getWriter();
+		HttpSession session=request.getSession(false);
+		BookingDetails details=(BookingDetails) session.getAttribute("BookingUserDetail");
+		
+
+		
+		dispatcher = request.getRequestDispatcher("book-flight.jsp");
+		dispatcher.include(request, response);
+		out.println("<script>document.getElementById('fullName').value=details.getFullName(); </script>");		   
+	
+	}
+      
+	
+	private void confirmDetails(HttpServletRequest request, HttpServletResponse response) throws Exception, IOException {
+		
+		String fullName=request.getParameter("fullName");
+		int age=Integer.parseInt(request.getParameter("age"));
+		String email=request.getParameter("email");
+		String address=request.getParameter("address");
+		
+		HttpSession session=request.getSession(); 	
+		
+		BookingDetails details=new BookingDetails(fullName,age,email,address);
+		request.setAttribute("BookingUserDetail", details);
+		session.setAttribute("BookingUserDetail", details);
+		RequestDispatcher rd= request.getRequestDispatcher("confirm-flight.jsp");
+		rd.forward(request, response);	
+		
+	}
+	private void bookFlight(HttpServletRequest request, HttpServletResponse response) throws Exception, IOException {
+	
+		RequestDispatcher rd=null;
+	    HttpSession session=request.getSession(false);
+	    PrintWriter out=response.getWriter();
+	    
+
+	    
+	    if(session!=null) {
+	  
+	    System.out.println("Session Active - Book Now!");
+		session.setAttribute("book_flightID",request.getParameter("flightID"));
+		session.setAttribute("book_fare",request.getParameter("fare"));
+		session.setAttribute("book_source",request.getParameter("source"));
+		session.setAttribute("book_dest",request.getParameter("destination"));
+		session.setAttribute("book_airline",request.getParameter("airline"));		
+		
+		System.out.println("session flightDetails:" +session.getAttribute("book_flightID")+session.getAttribute("book_fare"));
+		rd= request.getRequestDispatcher("book-flight.jsp");
+		rd.forward(request, response);	
+	    }
+	    else {
+	    	System.out.println("User not logged in!");
+	    	
+	    	rd=request.getRequestDispatcher("login.html");			
+			rd.include(request, response); // HTML page output + output of else condition will be printed
+			out.println("<script>document.getElementById('loginalert').innerHTML='Please Login to Continue'; </script>");
+	    }
+	}
+
+	private void searchFlight(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		
+		String source=request.getParameter("source");
+		String destination=request.getParameter("destination");
+		HttpSession session=request.getSession(false);
+
+		if(session!=null) {
+			session.setAttribute("book_date",request.getParameter("date"));//data calender data
+			session.setAttribute("book_no_of_ppl", request.getParameter("no-of-people"));
+ 
+		}
+		else {
+			   request.setAttribute("book_date", request.getParameter("date"));
+			   request.setAttribute("book_no_of_ppl",request.getParameter("no-of-people"));
+		}
+
+		List<Flight> flightList=bookingDb.searchFlight(source,destination);
+		for(int i=0;i<flightList.size();i++) {
+			System.out.println(flightList.get(i));
+		}
+		
+		RequestDispatcher dispatcher;
+		PrintWriter out=response.getWriter();
+		
+		if(flightList.size()==0) {
+			dispatcher = request.getRequestDispatcher("home.jsp");
+			dispatcher.include(request, response);	
+			out.println("<script>document.getElementById('error').innerHTML='NO RESULTS FOUND!!'; </script>");
+		}
+		else {
+		
+		
+		request.setAttribute("FLIGHT_LIST", flightList);
+		
+		
+	    dispatcher = request.getRequestDispatcher("search-results.jsp");
+		dispatcher.forward(request, response);		
+		}
+	}
+
+	private void viewHomePage(HttpServletRequest request, HttpServletResponse response) throws Exception, IOException {
+		RequestDispatcher rd= request.getRequestDispatcher("home.jsp");
+		rd.forward(request, response);		
+	}
+	
+
+}
+
+BookingDb:
+package com;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.sql.DataSource;
+
+public class BookingDb {
+private DataSource dataSource;
+	
+	public BookingDb(DataSource theDataSource) {
+		dataSource=theDataSource;
+	}
+	
+	 
+	  private void close(Connection myConn, Statement myStmt, ResultSet myRs) {
+       try {
+    	   if(myRs !=null) {
+    		   myRs.close();
+    	   }
+    	   if(myStmt !=null) {
+    		   myStmt.close();
+    	   }
+    	   if(myRs !=null) {
+    		   myRs.close();
+    	   }
+    	   
+       }
+       catch (Exception e){
+    	 e.printStackTrace();
+       }		
+	}
+
+	public List<Flight> searchFlight(String source,String destination) throws Exception {
+	
+		List<Flight> flights = new ArrayList<>();
+		
+		
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		String pass=null;
+try {
+			
+			
+			myConn = dataSource.getConnection();
+			
+		
+			String sql =" SELECT * FROM flight_details WHERE source_place=? AND destination_place=?";
+			
+			
+			myStmt = myConn.prepareStatement(sql);
+			
+		
+			myStmt.setString(1, source);
+			myStmt.setString(2, destination);
+						
+			
+			myRs = myStmt.executeQuery();
+			
+			
+			while(myRs.next()) {
+				 String flightNo=myRs.getString("flightNo");
+				 String airline=myRs.getString("airline");
+				 
+				 String departure=myRs.getString("departure");
+				 String arrival=myRs.getString("arrival");
+				 String duration=myRs.getString("duration");
+				 int duration_in_min=myRs.getInt("duration_in_min");				 
+				 String airportName=myRs.getString("airportName");
+				 int totalStops = myRs.getInt("totalStops");
+				 int availableSeats=myRs.getInt("availableSeats");
+				 float fare=myRs.getFloat("fare");
+				 Flight tempFlight = new Flight(flightNo,airline,source,destination,departure,arrival,duration,duration_in_min,airportName,totalStops,availableSeats,fare);
+					
+				flights.add(tempFlight);
+				}
+				
+			    return flights;
+		}
+		finally {
+			close(myConn,myStmt,myRs);
+		}		
+	}
+
+	public void saveOrderDetails(BookingDetails order_success, String src, String dest, String fid, float fare,
+			String aline, String date, int ppl) throws SQLException {
+		
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+			
+		try {		
+			myConn = dataSource.getConnection();	
+				String sql= "INSERT into order_details (book_date,fullName,age,o_email,address,flightNo,airline,source_place,destination_place,fare,no_of_ppl) values(?,?,?,?,?,?,?,?,?,?,?)";
+				
+				myStmt= myConn.prepareStatement(sql);
+				
+				myStmt.setString(1,date);
+				myStmt.setString(2,order_success.getFullName());
+				myStmt.setInt(3,order_success.getAge());
+				myStmt.setString(4,order_success.getEmail());
+				myStmt.setString(5,order_success.getAddress());		
+				myStmt.setString(6,fid);			
+				myStmt.setString(7,aline);
+				myStmt.setString(8,src);	
+				myStmt.setString(9,dest);	
+				myStmt.setFloat(10,fare);	
+				myStmt.setInt(11,ppl);	
+				myStmt.execute();		
+				System.out.println("SQL DONE 01");		
+			}
+
+	 finally {
+			close(myConn,myStmt,null);
+			System.out.println("SQL DONE 02");
+			}		
+	}
+
+	public List<BookingDetails> getOrderDetails(String email) throws SQLException {
+		
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		
+		List<BookingDetails> bd = new ArrayList<>();
+		
+		try {		
+			myConn = dataSource.getConnection();	
+			// Get customer ID
+			String sql="SELECT * from order_details WHERE o_email=?";
+			myStmt = myConn.prepareStatement(sql);
+			myStmt.setString(1,email);
+			myRs=myStmt.executeQuery();
+
+				while(myRs.next()) {
+					 String flightNo=myRs.getString("flightNo");
+					 String airline=myRs.getString("airline");
+					 String source=myRs.getString("source_place");
+					 String destination=myRs.getString("destination_place");
+					 String date=myRs.getString("book_date");
+					 String fullName=myRs.getString("fullName");
+					 int age=myRs.getInt("age");				 
+					 int no=myRs.getInt("no_of_ppl");
+					 float fare=myRs.getFloat("fare");
+
+					 BookingDetails temp = new BookingDetails(no,fullName,age,email,null,date,new Flight(flightNo,airline,source,destination,fare));
+					 bd.add(temp);
+				 }
+				return bd;			
+        }
+	 finally {
+			close(myConn,myStmt,null);
+	 }
+	}
+
+}
+BookingDetails:
+
+package com;
+
+public class BookingDetails {
+	private String fullName;
+	private int age;
+	private String email;
+	private String address;
+	private String date;
+	private Flight bookedflight;
+	private int no_of_ppl=0;
+	
+	public BookingDetails(String fullName, int age, String email, String address) {
+		super();
+		this.fullName = fullName;
+		this.age = age;
+		this.email = email;
+		this.address = address;
+	}	
+	
+	public BookingDetails(String date, Flight bookedflight) {
+		super();
+		this.date = date;
+		this.bookedflight = bookedflight;
+	}
+	
+
+	public BookingDetails(int no,String fullName, int age, String email, String address, String date, Flight bookedflight) {
+		super();
+		this.fullName = fullName;
+		this.age = age;
+		this.email = email;
+		this.address = address;
+		this.date = date;
+		this.bookedflight = bookedflight;
+		this.no_of_ppl=no;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public Flight getBookedflight() {
+		return bookedflight;
+	}
+
+	public void setBookedflight(Flight bookedflight) {
+		this.bookedflight = bookedflight;
+	}
+
+	public int getNo_of_ppl() {
+		return no_of_ppl;
+	}
+
+	public void setNo_of_ppl(int no_of_ppl) {
+		this.no_of_ppl = no_of_ppl;
+	}
+
+}
+
+Flight:
+package com;
+
+public class Flight {
+	private String flightNo="";
+	private String airline="";
+	private String source="";
+	private String destination="";
+	private String departure="";
+	private String arrival="";
+	private String duration="";
+	private int duration_in_min;
+	private String airportName="";
+	private int totalStops;	
+	private int availableSeats;
+	private float fare;
+	public Flight(String source, String destination) {
+		super();
+		this.source = source;
+		this.destination = destination;
+	}
+
+
+	public Flight(String flightNo, String airline, String source, String destination, float fare) {
+		super();
+		this.flightNo = flightNo;
+		this.airline = airline;
+		this.source = source;
+		this.destination = destination;
+		this.fare = fare;
+	}
+
+
+	public Flight(String flightNo, String airline, String source, String destination, String departure, String arrival,
+		String duration, int duration_in_min, String airportName, int totalStops, int availableSeats, float fare) {
+	super();
+	this.flightNo = flightNo;
+	this.airline = airline;
+	this.source = source;
+	this.destination = destination;
+	this.departure = departure;
+	this.arrival = arrival;
+	this.duration = duration;
+	this.duration_in_min = duration_in_min;
+	this.airportName = airportName;
+	this.totalStops = totalStops;
+	this.availableSeats = availableSeats;
+	this.fare = fare;
+}
+
+
+	//getters & setters
+	public String getFlightNo() {
+		return flightNo;
+	}
+	public void setFlightNo(String flightNo) {
+		this.flightNo = flightNo;
+	}
+	public String getAirline() {
+		return airline;
+	}
+	public void setAirline(String airline) {
+		this.airline = airline;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	public String getDestination() {
+		return destination;
+	}
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+	public String getDeparture() {
+		return departure;
+	}
+	public void setDeparture(String departure) {
+		this.departure = departure;
+	}
+	public String getArrival() {
+		return arrival;
+	}
+	public void setArrival(String arrival) {
+		this.arrival = arrival;
+	}
+	public int getDuration_in_min() {
+		return duration_in_min;
+	}
+	public void setDuration_in_min(int duration_in_min) {
+		this.duration_in_min = duration_in_min;
+	}
+	public String getDuration() {
+		return duration;
+	}
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+	public String getAirportName() {
+		return airportName;
+	}
+	public void setAirportName(String airportName) {
+		this.airportName = airportName;
+	}
+	public int getTotalStops() {
+		return totalStops;
+	}
+	public void setTotalStops(int totalStops) {
+		this.totalStops = totalStops;
+	}
+	public int getAvailableSeats() {
+		return availableSeats;
+	}
+	public void setAvailableSeats(int availableSeats) {
+		this.availableSeats = availableSeats;
+	}
+	public float getFare() {
+		return fare;
+	}
+	public void setFare(float fare) {
+		this.fare = fare;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Flight [flightNo=" + flightNo + ", airline=" + airline + ", source=" + source + ", destination="
+				+ destination + ", departure=" + departure + ", arrival=" + arrival + ", duration=" + duration
+				+ ", duration_in_min=" + duration_in_min + ", airportName=" + airportName + ", totalStops=" + totalStops
+				+ ", availableSeats=" + availableSeats + ", fare=" + fare + "]";
+	}
+
+
+
+
+}
+
+logoutServlet:
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class LogoutServlet
+ */
+public class LogoutServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");  
+        PrintWriter out=response.getWriter();  
+          
+        request.getRequestDispatcher("logout.html").forward(request, response);  
+        //Invalidate Session  
+        HttpSession session=request.getSession();  
+        session.invalidate();  
+          
+        //out.print("You are successfully logged out!");  
+          
+        out.close();  
+	}
+}
+
+user:
+package com;
+
+public class User {
+	private String fname="";
+	private String lname="";
+	private String email="";
+	private String phoneno="";
+	private String password="";
+	private int age=0;
+	private String address="";
+	private String fullname="";
+	
+	// Constructors
+	
+	public User(String fname, String lname, String email, String phoneno, String password) {
+		super();
+		this.fname = fname;
+		this.lname = lname;
+		this.email = email;
+		this.phoneno = phoneno;
+		this.password = password;
+	}
+
+	public User(String email, String password) {
+		super();
+		this.email = email;
+		this.password = password;
+	}
+
+
+	public User(String email2, int age2, String address2, String fullName2) {
+		super();
+		this.email = email2;
+		this.age = age2;
+		this.address = address2;
+		this.fullname = fullName2;
+	}
+
+	// Getters & Setters
+	public String getFname() {
+		return fname;
+	}
+
+	public void setFname(String fname) {
+		this.fname = fname;
+	}
+
+	public String getLname() {
+		return lname;
+	}
+
+	public void setLname(String lname) {
+		this.lname = lname;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhoneno() {
+		return phoneno;
+	}
+
+	public void setPhoneno(String phoneno) {
+		this.phoneno = phoneno;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getFullname() {
+		return fullname;
+	}
+
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
+	}
+			
+	
+	
+	
+
+}
+
+userDb:
+package com;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
+
+public class UserDb {
+	private DataSource dataSource;
+	
+
+	
+	public UserDb(DataSource theDataSource) {
+	         dataSource=theDataSource;
+	}
+	
+    
+	  private void close(Connection myConn, Statement myStmt, ResultSet myRs) {
+         try {
+      	   if(myRs !=null) {
+      		   myRs.close();
+      	   }
+      	   if(myStmt !=null) {
+      		   myStmt.close();
+      	   }
+      	   if(myRs !=null) {
+      		   myRs.close();
+      	   }
+      	   
+         }
+         catch (Exception e){
+      	 e.printStackTrace();
+         }		
+	}
+	  
+	
+	public void registerUser(User theUser) throws Exception {
+		
+		
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		
+		try {
+		
+			
+				myConn = dataSource.getConnection();
+				
+		    
+				
+				String sql="INSERT into customers "+ "(first_name,last_name,email,phno,user_password) " + "values(?,?,?,?,?)";
+				myStmt = myConn.prepareStatement(sql);
+				
+			
+				
+				myStmt.setString(1,theUser.getFname());
+				myStmt.setString(2,theUser.getLname());
+				myStmt.setString(3,theUser.getEmail());
+				myStmt.setString(4,theUser.getPhoneno());
+				myStmt.setString(5,theUser.getPassword());
+			
+	
+				myStmt.execute();
+	        }
+		 finally {
+			
+				close(myConn,myStmt,null);
+				}
+		  }
+	
+
+	public String validateLogin(User theUser) throws Exception {
+	
+				Connection myConn = null;
+				PreparedStatement myStmt = null;
+				ResultSet myRs = null;
+				String pass=null;
+				
+				try {
+					
+					
+						myConn = dataSource.getConnection();
+						
+				   
+						
+						String sql="SELECT user_password from customers WHERE email=?";
+						myStmt = myConn.prepareStatement(sql);
+						
+				
+						
+						myStmt.setString(1,theUser.getEmail());
+					
+					
+						
+						myRs=myStmt.executeQuery();
+						
+						if(myRs.next())
+						{
+							pass=myRs.getString("user_password");
+							return pass;
+						}
+						else {
+							return null;
+						}
+			        }
+				 finally {
+					
+						close(myConn,myStmt,null);
+						}
+				  }
+
+	public String validateAdminLogin(AdminUser admin) throws Exception {
+		
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		String pass=null;
+		
+		try {
+			
+			
+				myConn = dataSource.getConnection();
+				
+		    
+				
+				String sql="SELECT a_password from admin WHERE a_username=?";
+				myStmt = myConn.prepareStatement(sql);
+				
+			
+				
+				myStmt.setString(1,admin.getUsername());
+			
+			
+				
+				myRs=myStmt.executeQuery();
+				
+				if(myRs.next())
+				{
+					pass=myRs.getString("a_password");
+					return pass;
+				}
+				else {
+					return null;	
+					
+				}
+	        }
+		 finally {
+			
+				close(myConn,myStmt,null);
+				}
+		  }
+
+	public User getProfileDetails(String email) throws Exception {
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		try {		
+				myConn = dataSource.getConnection();				
+				String sql="SELECT * from customers WHERE email=?";
+				myStmt = myConn.prepareStatement(sql);				
+				myStmt.setString(1,email);				
+				myRs=myStmt.executeQuery();
+				
+				if(myRs.next())
+				{
+					String firstName = myRs.getString("first_name");
+					String lastName = myRs.getString("last_name");
+					String email2 = myRs.getString("email");
+					String phno = myRs.getString("phno");
+					
+					User u = new User(firstName,lastName,email2,phno,null);
+					System.out.println("Gathered User Details!");
+					return u;
+				}
+				else {
+					
+					System.out.println("NOT FOUND!!!");
+					return null;
+				}
+	        }
+		 finally {
+			
+				close(myConn,myStmt,null);
+				}
+	}
+
+}
+
+ValidationController:
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+
+import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
+
+
+/**
+ * Servlet implementation class ValidationControllerServlet
+ */
+
+
+public class ValidationController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    
+	private UserDb userDb;	
+	
+	
+	@Resource(name="jdbc/flight_booking")
+	private DataSource dataSource; 
+	
+	
+	@Override 
+	public void init() throws ServletException {
+		
+		super.init();
+		
+		try {
+			userDb = new UserDb(dataSource);
+			
+		}
+		catch (Exception e){
+			throw new ServletException(e) ;
+	    }
+	  }
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		       try {		    	   
+		            
+					String theCommand = request.getParameter("command");
+					
+					
+					if (theCommand==null) {
+						theCommand="SIGNUP";
+					}
+					
+				    switch(theCommand){
+				    
+				    case "SIGNUP":
+				    	registerUser(request,response);
+				    	break;
+				    case "LOGIN":
+				    	validateLogin(request,response);
+				        break;
+				    case "ADMIN":
+				    	adminLogin(request,response);				    
+				    default:
+				    	validateLogin(request,response);			      
+				    }	
+				    
+				} catch (Exception e) {
+					System.out.println("Exception Occured: "+e);
+				}
+			}
+
+	private void adminLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		       
+		
+				String username=request.getParameter("username");
+				String password=request.getParameter("password");
+				
+		
+				AdminUser admin = new AdminUser(username,password);
+				
+				
+					
+				String dbPassword=userDb.validateAdminLogin(admin);
+				RequestDispatcher rd= null;
+				PrintWriter out=response.getWriter();
+				
+				if(password.equals(dbPassword))
+				{
+					
+					HttpSession session=request.getSession(); 
+					   if(session.isNew()) {
+				        	System.out.println("New Session Created:" +session.getId());
+				        }
+					
+					session.setAttribute("username",username);			
+					
+					rd= request.getRequestDispatcher("admin_home.jsp");
+					out.println("<script>document.getElementById('error').innerHTML=''; </script>");
+					rd.forward(request, response);
+				}
+				    
+				else {
+					rd=request.getRequestDispatcher("admin_login.html");
+					rd.include(request, response); 
+					out.println("<script>document.getElementById('error').innerHTML='Invalid UserName or Password!'; </script>");
+				}		
+			}
+
+	private void validateLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		
+		String email=request.getParameter("email");
+		String password=request.getParameter("password");
+		
+		
+		User theUser = new User(email,password);
+		
+		
+			
+		String dbPassword=userDb.validateLogin(theUser);
+		RequestDispatcher rd= null;
+		PrintWriter out=response.getWriter();
+		
+		
+		
+		if(password.equals(dbPassword))
+		{
+		
+			User profileDetails = userDb.getProfileDetails(email);
+			
+			HttpSession session=request.getSession(); 
+	        if(session.isNew()) {
+	        	System.out.println("New Session Created:" +session.getId());
+	        }			
+			
+			session.setAttribute("USER_DETAILS", profileDetails);
+			session.setAttribute("username",profileDetails.getFname());
+			session.setAttribute("user_email", email);
+			rd= request.getRequestDispatcher("home.jsp");
+			out.println("<script>document.getElementById('error').innerHTML=''; </script>");
+			rd.forward(request, response);
+		}
+		    
+		else {
+
+			rd=request.getRequestDispatcher("login.html");			
+			rd.include(request, response); 
+			out.println("<script>document.getElementById('error').innerHTML='Invalid UserName or Password!'; </script>");
+		}		
+	}
+
+	private void registerUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		
+		String firstName=request.getParameter("firstName");
+		String lastName=request.getParameter("lastName");
+		String email=request.getParameter("email");
+		String phno=request.getParameter("phno");
+		String password=request.getParameter("password");
+		
+	
+		User theUser = new User(firstName,lastName,email,phno,password);
+		
+		
+			
+		userDb.registerUser(theUser);
+		System.out.println("User Registered Succesfully!");
+		
+		
+		HttpSession session=request.getSession(); 
+        if(session.isNew()) {
+        	System.out.println("New Session Created:" +session.getId());
+        }
+		session.setAttribute("username",firstName);
+		session.setAttribute("user_email", email);
+			
+		RequestDispatcher rd= request.getRequestDispatcher("home.jsp");
+		rd.forward(request, response);
+	}
+	
+	
+	
+}
+
+myListener
+package listeners;
+
+import java.util.Date;
+
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+
+/**
+ * Application Lifecycle Listener implementation class MyListener
+ *
+ */
+@WebListener
+public class Mylistener implements HttpSessionListener, HttpSessionAttributeListener {
+
+    /**
+     * Default constructor. 
+     */
+    public Mylistener() {
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+     * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
+     */
+    public void sessionCreated(HttpSessionEvent se)  { 
+         
+    	System.out.println("Hello from Listener - sessionCreated at: "+ new Date(se.getSession().getCreationTime()));
+    }
+
+	/**
+     * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
+     */
+    public void sessionDestroyed(HttpSessionEvent se)  { 
+    	System.out.println("Hello from Listener - sessionDestroyed " + new Date());
+    }
+
+	/**
+     * @see HttpSessionAttributeListener#attributeAdded(HttpSessionBindingEvent)
+     */
+    public void attributeAdded(HttpSessionBindingEvent se)  { 
+    	
+    	System.out.println("Hello from Listener - Key with "+ se.getName()+ "and value is "+ se.getValue()+" added successfully");
+    }
+
+	/**
+     * @see HttpSessionAttributeListener#attributeRemoved(HttpSessionBindingEvent)
+     */
+    public void attributeRemoved(HttpSessionBindingEvent se)  { 
+         
+    	System.out.println("Hello from Listener - Key with "+ se.getName()+ "and value is "+ se.getValue()+" removed successfully");
+    }
+
+	/**
+     * @see HttpSessionAttributeListener#attributeReplaced(HttpSessionBindingEvent)
+     */
+    public void attributeReplaced(HttpSessionBindingEvent se)  { 
+    	System.out.println("Hello from Listener - Key with "+ se.getName()+ "and value is "+ se.getValue()+" modified successfully");
+    }
+	
+}
+
+<%@page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>  
+<%@include file="header.html" %>
+
+<div id="navbar">
+  <ul>
+    <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="#">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+<h2 style="color:white">ADD NEW FLIGHT</h2>
+
+<div id="data-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+<form method="get" action="AdminController">
+            <input type="hidden" name="command" value="ADDFLIGHT">
+            <h3> Fill details:</h3>
+             <!-- Put new button: Clear Results -->
+      <input type="button" value="Reset" onclick="window.location.href='add-flight.jsp';return false;"class="reset-search-button" style="float:right">
+            <div class="inputBox">
+		               <label>Flight ID:</label><br>
+		               <input class="input-field" type="text" name="flightID" placeholder="XX-XXX" id="flightID" required>
+		         </div><br>
+		         
+		          <div class="inputBox">		               
+		               <label>Airline:</label><br>
+		               <input class="input-field" type="text" name="airline" placeholder="Enter airline" id="airline" required>
+		         </div><br>   
+		         
+		         <div class="inputBox">
+		               
+		               <label>Source:</label><br>
+		               <input class="input-field" type="text" name="src" placeholder="Enter source location" id="src" required>
+		         </div><br>
+		          <div class="inputBox">
+		               
+		               <label>Destination:</label><br>
+		               <input class="input-field" type="text" name="dest" placeholder="Enter destination location" id="dest" required>
+		         </div><br>
+		         <div class="inputBox">
+		               
+		               <label>Airport:</label><br>
+		               <input class="input-field" type="text" name="ap" placeholder="Enter airport" id="ap" required>
+		         </div><br>
+		     
+		         <div class="inputBox">
+		               
+		               <label>Total Seats:</label><br>
+		               <input class="input-field" type="text" name="seats" placeholder="Enter seats available" id="seats" required>
+		         </div><br>
+		         <div class="inputBox">
+		               
+		               <label>Fare:</label><br>
+		               <input class="input-field" type="text" name="fare" placeholder="Enter ticket price" id="fare" required>
+		         </div><br>
+		         
+		         <div class="inputBox">
+		              <label>Duration:</label><br>
+		               <input class="input-field" type="text" name="dur" placeholder="0h 0min" id="dur" required>
+		         </div><br>
+		                 <div class="inputBox">
+		               <label>Duration in Minutes:</label><br>
+		               <input class="input-field" type="text" name="dur_min" placeholder="000" id="dur_min" required>
+		         </div><br>
+		         <div class="inputBox">
+		               
+		               <label>Departure Time:</label><br>
+		               <input class="input-field" type="text" name="dep" placeholder="00:00:00" id="dep" required>
+		         </div><br>
+		         <div class="inputBox">
+		               
+		               <label>Arrival Time:</label><br>
+		               <input class="input-field" type="text" name="arr" placeholder="00:00:00" id="arr" required>
+		         </div><br>
+		         <div class="inputBox">
+		               
+		               <label>Total Stops:</label><br>
+		               <input class="input-field" type="text" name="stops" placeholder="Enter total Stops" id="stops" required>
+		         </div><br>
+		 		          		         	              		             
+		         <input type="submit" value="CONTINUE" class="login-btn" />
+       
+           
+        </form>
+</div>
+
+
+admin_airlines.jsp:
+<%@page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"  isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>   
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="admin_home.jsp">Hi Admin </a> </li>
+     <li><a href="admin_profile.html">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+
+<c:url var="srcLocLink" value="AdminController">
+             <c:param name="command" value="VIEWSRCLOC"/>                    
+</c:url>
+<c:url var="desLocLink" value="AdminController">
+             <c:param name="command" value="VIEWDESTLOC"/>                    
+</c:url>
+<c:url var="airlineLink" value="AdminController">
+             <c:param name="command" value="VIEWAIRLINE"/>                    
+</c:url>
+<c:url var="flightLink" value="AdminController">
+             <c:param name="command" value="VIEWFLIGHT"/>                    
+</c:url>
+
+<div id="search-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+  <div id="rights_navbar">
+             <h2 style="margin-left:10%">VIEW   MASTER   DATA   LIST</h2>         
+     <ul>
+        <li><a href="${srcLocLink}"> <b>AVAILABLE PLACES </b> </a></li>
+        <li><a href="${desLocLink}"><b>AVAILABLE DESTINATION</b></a> </li>
+        <li><a href="${airlineLink}"><b>AIRLINES</b></a> </li>
+        <li><a href="${flightLink}"><b>FLIGHT LIST </b></a></li>
+   </ul> 
+   
+       <div>
+           
+    <c:forEach var="temp" items="${AIR_LIST}" >
+        <p><c:out value="${temp}"/></p>
+    </c:forEach>        
+    
+    </div> 
+  </div>
+</div>
+ 
+admin_available_place.jsp:
+<%@page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"  isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>   
+<%@page import="com.*,java.util.*" %>
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="admin_home.jsp">Hi Admin </a> </li>
+     <li><a href="admin_profile.html">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+<c:url var="srcLocLink" value="AdminController">
+             <c:param name="command" value="VIEWSRCLOC"/>                    
+</c:url>
+<c:url var="desLocLink" value="AdminController">
+             <c:param name="command" value="VIEWDESTLOC"/>                    
+</c:url>
+<c:url var="airlineLink" value="AdminController">
+             <c:param name="command" value="VIEWAIRLINE"/>                    
+</c:url>
+<c:url var="flightLink" value="AdminController">
+             <c:param name="command" value="VIEWFLIGHT"/>                    
+</c:url>
+<div id="search-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+  <div id="rights_navbar">
+  <h2 style="margin-left:10%">VIEW   MASTER   DATA   LIST</h2>       
+     <ul>
+        <li><a href="${srcLocLink}"> <b>AVAILABLE PLACES </b> </a></li>
+        <li><a href="${desLocLink}"><b>AVAILABLE DESTINATION</b></a> </li>
+        <li><a href="${airlineLink}"><b>AIRLINES</b></a> </li>
+        <li><a href="${flightLink}"><b>FLIGHT LIST </b></a></li>
+   </ul>
+   <div>
+           
+    <c:forEach var="temp" items="${SRC_LIST}" >
+        <p><c:out value="${temp}"/></p>
+    </c:forEach>        
+    
+    </div>            
+  </div>
+</div>
+ 
+admin_flight:
+<%@page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"  isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>   
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="admin_home.jsp">Hi Admin </a> </li>
+     <li><a href="admin_profile.html">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+
+<c:url var="srcLocLink" value="AdminController">
+             <c:param name="command" value="VIEWSRCLOC"/>                    
+</c:url>
+<c:url var="desLocLink" value="AdminController">
+             <c:param name="command" value="VIEWDESTLOC"/>                    
+</c:url>
+<c:url var="airlineLink" value="AdminController">
+             <c:param name="command" value="VIEWAIRLINE"/>                    
+</c:url>
+<c:url var="flightLink" value="AdminController">
+             <c:param name="command" value="VIEWFLIGHT"/>                    
+</c:url>
+
+<div id="search-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+  <div id="rights_navbar">
+             <h2 style="margin-left:10%">VIEW   MASTER   DATA   LIST</h2> 
+             <button style="margin-left:40px;padding: 10px 15px;font-size: 14px;background-color: #00cc00;cursor:pointer;border-radius:12px" onclick="window.location.href='add-flight.jsp';return false;">Add Flight</button>
+             <ul>
+        <li><a href="${srcLocLink}"> <b>AVAILABLE PLACES </b> </a></li>
+        <li><a href="${desLocLink}"><b>AVAILABLE DESTINATION</b></a> </li>
+        <li><a href="${airlineLink}"><b>AIRLINES</b></a> </li>
+        <li><a href="${flightLink}"><b>FLIGHT LIST </b></a></li>
+   </ul> 
+  
+    <div>
+    <table border="1" style="margin: auto;">
+        <thead>
+         <tr>
+            <th>Flight ID </th>
+            <th>Airlines </th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Arrival </th>
+            <th>Departure </th>
+            <th>Duration</th>
+            <th>Airport Name </th>
+            <th>Total No.of Stops </th>
+            <th>Available Seats</th>
+            <th>Price</th>
+            </tr>  
+         </thead>
+         <tbody>
+     
+   
+    <c:forEach var="flight" items="${F_LIST}" >
+      <tr>
+         <td>${flight.flightNo}</td>
+            <td>  ${flight.airline}</td>
+            <td> ${flight.source} </td>
+             <td> ${flight.destination}</td>
+            <td>  ${flight.departure}</td>
+            <td> ${flight.arrival} </td>
+             <td> ${flight.duration}</td>
+            <td> ${flight.airportName} </td>
+             <td> ${flight.totalStops}</td>
+            <td>  ${flight.availableSeats}</td>
+            <td> ${flight.fare} </td>
+      </tr>
+     </c:forEach>
+     </tbody>   
+     </table>   
+     </div> 
+   
+ </div>
+ </div>
+
+admin_home:
+<%@page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"  isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>   
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="admin_home.jsp">Hi Admin </a> </li>
+     <li><a href="admin-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+
+<c:url var="srcLocLink" value="AdminController">
+             <c:param name="command" value="VIEWSRCLOC"/>                    
+</c:url>
+<c:url var="desLocLink" value="AdminController">
+             <c:param name="command" value="VIEWDESTLOC"/>                    
+</c:url>
+<c:url var="airlineLink" value="AdminController">
+             <c:param name="command" value="VIEWAIRLINE"/>                    
+</c:url>
+<c:url var="flightLink" value="AdminController">
+             <c:param name="command" value="VIEWFLIGHT"/>                    
+</c:url>
+
+<div id="search-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+  <div id="rights_navbar">
+             <h2 style="margin-left:10%">VIEW   MASTER   DATA   LIST</h2>         
+     <ul>
+        <li><a href="${srcLocLink}"> <b>AVAILABLE PLACES </b> </a></li>
+        <li><a href="${desLocLink}"><b>AVAILABLE DESTINATION</b></a> </li>
+        <li><a href="${airlineLink}"><b>AIRLINES</b></a> </li>
+        <li><a href="${flightLink}"><b>FLIGHT LIST </b></a></li>
+   </ul> 
+  </div>
+</div>
+ 
+   
+admin_login:
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<script src="https://kit.fontawesome.com/2a534a6860.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<title>Admin Login</title>
+<style>
+  #error{
+   color:red;
+   text-align:center;
+   font-size:15px;
+   padding-bottom:3px;
+   }
+</style>
+</head>
+<body>
+       <h1 id="title-head">Flyaway Flight Booking</h1>
+       <div class="login-box">
+          <h1> Admin Login </h1>
+          <form method="post" action="ValidationController">
+              <input type="hidden" name="command" value="ADMIN">
+              <span id="error" ></span>   
+		         <div class="inputBox">
+		               <i class="fas fa-envelope"></i>
+		               <label>Username</label>
+		               <input class="input-field" type="text" name="username" placeholder="Enter username" required autofocus>
+		         </div><br>
+		         <div class="inputBox">
+		               <i class="fas fa-lock"></i>
+		               <label>Password</label>
+		               <input class="input-field" type="password" name="password" placeholder="Enter password" required>
+		         </div><br>
+		         <input type="submit" value="SIGN IN" class="login-btn" />
+		    </form>
+		         <hr>
+		         <p class="or">OR</p>
+                 <small> Sign in as <a href="login.html"> User </a></small>                                                
+       
+       </div>
+</body>
+</html>
+admin_place_dest.jsp:
+<%@page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"  isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>   
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="admin_home.jsp">Hi Admin </a> </li>
+     <li><a href="admin_profile.html">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+
+<c:url var="srcLocLink" value="AdminController">
+             <c:param name="command" value="VIEWSRCLOC"/>                    
+</c:url>
+<c:url var="desLocLink" value="AdminController">
+             <c:param name="command" value="VIEWDESTLOC"/>                    
+</c:url>
+<c:url var="airlineLink" value="AdminController">
+             <c:param name="command" value="VIEWAIRLINE"/>                    
+</c:url>
+<c:url var="flightLink" value="AdminController">
+             <c:param name="command" value="VIEWFLIGHT"/>                    
+</c:url>
+
+<div id="search-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+  <div id="rights_navbar">
+             <h2 style="margin-left:10%">VIEW   MASTER   DATA   LIST</h2>         
+     <ul>
+        <li><a href="${srcLocLink}"> <b>AVAILABLE PLACES </b> </a></li>
+        <li><a href="${desLocLink}"><b>AVAILABLE DESTINATION</b></a> </li>
+        <li><a href="${airlineLink}"><b>AIRLINES</b></a> </li>
+        <li><a href="${flightLink}"><b>FLIGHT LIST </b></a></li>
+   </ul> 
+   
+      <div>
+           
+    <c:forEach var="temp" items="${DEST_LIST}" >
+        <p><c:out value="${temp}"/></p>
+    </c:forEach>        
+    
+    </div> 
+   
+   
+  </div>
+</div>
+ 
+admin_profile.jsp:
+<%@page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>  
+<%@include file="header.html" %>
+
+<div id="navbar">
+  <ul>
+    <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="#">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+ 
+ <div id=container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+ <h2> ADMIN PROFILE</h2> 
+ <form action="AdminController" method="get">
+ <input type="hidden" name="command" value="CHANGE"> 
+   <div class="inputfield">
+       <span id="success" style="color:green;text-align:center;font-size:15px;"></span>
+       <span id="error" style="color:red;text-align:center;font-size:15px;padding-bottom:5px;"></span> <br>
+       <label> Enter Username</label> <br>
+       <input type="text" name="username" required>
+   </div><br>
+   <div class="inputfield">
+       <label> Enter Current Password</label> <br>
+       <input type="text" name="password1" required>
+       </div><br>
+   <div class="inputfield">
+       <label> Enter New Password</label> <br>
+       <input type="text" name="password2" required> 
+   </div><br>
+   <input type="submit" value="CHANGE PASSWORD" id="change-pwd-btn" onclick="if(!(confirm('Are you sure you want to change password?')))return false;"  style="margin-left:0px;padding: 7px 12px;font-size: 14px;background-color: #00cc00;cursor:pointer;border-radius:12px"> 
+ </form>
+ </div> <br>
+  
+ 
+       
+<%@page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@include file="header.html" %>
+<%@page import="com.BookingDetails"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>  
+<%
+    BookingDetails details= (BookingDetails)request.getAttribute("BookingUserDetail");
+%>
+<div id="navbar">
+  <ul>
+     <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="my-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+   
+           <c:url var="editLink" value="BookingController">
+             <c:param name="command" value="EDIT"/>        
+         </c:url>
+        
+     <div id="confirm-details" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:30%;padding:15px;">
+        <h2> Confirm your Details</h2>
+        <table>
+          <tr>
+              <td>Full Name:</td>
+              <td><%=details.getFullName() %></td>
+          </tr>
+          <tr>
+              <td>Age:</td>
+              <td><%=details.getAge() %></td>
+          </tr>
+          <tr>
+              <td>Email:</td>
+              <td><%=details.getEmail() %></td>
+          </tr>
+          <tr>
+              <td>Address</td>
+              <td><%=details.getAddress() %></td>
+          </tr> 
+          <tr>
+              <td>Date</td>
+              <td><%=session.getAttribute("book_date")%></td>
+          </tr>  
+          <tr>
+              <td>No: of Tickets:</td>
+              <td><%=session.getAttribute("book_no_of_ppl")%></td>
+          </tr> 
+          <tr>
+              <td><hr></td>
+          </tr>
+          <tr>
+              <td style="font-size:16px;"><b>FLIGHT DETAILS:</b></td>
+          </tr>
+              
+          <tr>
+               <td>Source:</td>
+               <td><%=session.getAttribute("book_source")%></td>
+          </tr>
+           <tr>
+               <td>Destination:</td>
+               <td><%=session.getAttribute("book_dest")%></td>
+          </tr>
+           <tr>
+               <td>Flight ID: </td>
+               <td><%=session.getAttribute("book_flightID")%></td>
+          </tr>
+           <tr>
+               <td>Airlines:</td>
+               <td><%=session.getAttribute("book_airline")%></td>
+          </tr>
+           <tr>
+           <td><b>Fare:</b></td>
+               <td><b><%=session.getAttribute("book_fare")%></b></td>
+          </tr>
+       
+           <tr>
+              <td><hr style="width:70%'"></td>             
+          </tr>        
+        </table>       
+ 
+
+  <button style="float:right;padding: 10px 24px;font-size: 16px;background-color: #00cc00;cursor:pointer;border-radius: 12px;" onclick="window.location.href='payment.jsp';return false;"> Proceed to Payment</button>
+  
+  </div>
+  
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link type="text/css" rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap" rel="stylesheet">
+<title>FlyAway Airline Booking Portal</title>
+
+  <style>
+	h1{
+	  font-family: 'Yellowtail', cursive;
+	  color:white;
+	  font-size:60px;
+	}
+#navbar {
+    float: right;
+    position: absolute;
+    top: 60px;
+    right: 0%;
+    border-radius: 5px;
+}
+    ul{
+      list-style-type: none;
+	  margin: 0;
+	  padding: 0;
+	  overflow: hidden;
+      background-color:#ccf3ff;
+  }
+  
+  li {
+  float:left;
+  }
+
+li a {
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+li a:hover {
+  background-color: #00b0e6;
+  color:white;
+}
+
+tr{
+padding:3px;
+}
+td,th{
+padding:5px;
+text-align:center;
+margin:2px;
+}
+
+#book-data-container{
+margin:auto !important;
+width:40%  !important;
+}
+
+  </style>
+  
+</head>
+<body>
+
+<!-- Header -->
+<h1> FlyAway Airline Booking</h1>
+<!-- /Header -->
+
+home.jsp
+<%@page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"  isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>   
+<%@ page session="false" %> 
+<%@include file="header.html" %>
+
+<div id="navbar">
+  <ul>
+     <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="my-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+   
+    <!-- Flight Details -->
+  <h2 style="margin-left:40px;color:white"> DOMESTIC FLIGHTS</h2>
+  <div id="search-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+  <h3> Search your Flight</h3>
+  <form method="POST" action="BookingController">
+    <input type="hidden" name="command" value="SEARCH">
+<!--   <input type="radio" name="flight-class" value="Business"> Business
+     <input type="radio"  name="flight-class" value="Economy"> Economy <br><br> -->   
+     <label>Source</label>
+     <input type="text" name="source" id="source" placeholder="New Delhi" required>
+     <label>Destination</label>
+     <input type="text" name="destination" id="destination" placeholder="Bangalore" required>
+     <label>Date</label>
+     <input type="date" name="date" id="date" required>
+     <label>Number of Passengers</label>
+     <select name="no-of-people">
+         <option value="1">Select</option>
+         <c:forEach varStatus="loop" begin = "1" end = "15">
+         <option value="${loop.index}">${loop.index} </option>
+      </c:forEach>
+     </select><br><br>
+     <input type="submit" name="submit" id="submit" value="Search" style="padding: 10px 24px;font-size: 16px;background-color: #00cc00;cursor:pointer;border-radius: 12px;"><br><br>
+  </form><br>
+  <span id="error" style="text-align: center;"></span><br>
+  </div>
+  
+   <!-- /Flight Details -->
+  
+index.html:
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap" rel="stylesheet">
+
+<title>Flyaway Flight Booking</title>
+
+
+	<style>
+	body {
+	  background-image: url('images/Online-Flight-Booking-Offers.jpg');
+	  background-size:cover;
+	}
+	h1{
+	  font-family: 'Yellowtail', cursive;
+	  color:white;
+	  font-size:60px;
+	}
+	.button {
+	  background-color: #4CAF50; /* Green */
+	  border: none;
+	  border-radius: 12px;
+	  color: white;
+	  padding: 15px 32px;
+	  text-align: center;
+	  text-decoration: none;
+	  display: inline-block;
+	  font-size: 16px;
+	  position: absolute;
+	  bottom:100px;
+	  margin-left:510px;
+	  cursor:pointer;
+	}
+	button:focus {     
+    background:#006600;    
+}
+
+   </style>
+</head>
+
+<body>
+    <h1>Flyaway Flight Booking</h1>
+    <button class="button" onclick="window.location.href='login.html';returnfalse;"> BOOK YOUR FLIGHT</button>
+    
+</body>
+</html>
+
+login.html:
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<script src="https://kit.fontawesome.com/2a534a6860.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<title>Login</title>
+<style>
+  #error{
+   color:red;
+   text-align:center;
+   font-size:15px;
+   padding-bottom:3px;
+   }
+</style>
+</head>
+<body>
+       <h1 id="title-head">Flyaway Flight Booking</h1>
+       <h2><b>  <span id="loginalert" ></span> </b></h2>
+       <div class="login-box">
+          <h1> Login </h1>
+          <form method="post" action="ValidationController">
+              <input type="hidden" name="command" value="LOGIN">     
+              <span id="error"></span>  
+		         <div class="inputBox">
+		               <i class="fas fa-envelope"></i>
+		               <label>Email ID</label>
+		               <input class="input-field" type="email" name="email" placeholder="Enter your email" required autofocus>
+		         </div><br>
+		         <div class="inputBox">
+		               <i class="fas fa-lock"></i>
+		               <label>Password</label>
+		               <input class="input-field" type="password" name="password" placeholder="Enter your password" required>
+		         </div><br>
+		         <input type="submit" value="SIGN IN" class="login-btn" />
+		    </form>
+		         <hr>
+		         <p class="or">OR</p>
+                 New User? <a href="signup.html">Register Here</a> 
+                 <hr>
+		         <p class="or">OR</p>
+                 <small> Sign in as <a href="admin_login.html"> Admin </a></small>                                                
+       
+       </div>
+</body>
+</html>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!--<%@include file="header.html" %>  -->
+<!-- Login/SignIn Page -->
+
+<h3><a href="index.jsp"> Sign Up </a>  |<a href="login.jsp">Sign In</a> </h3> <br><br>
+        <form method="post" action="ValidationController">
+        <input type="hidden" name="command" value="LOGIN">
+            
+            <table border="1"  width="30%" cellpadding="3">
+                <thead>
+                    <tr>
+                        <th colspan="2">Login Page</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Email</td>
+                        <td><input type="email" name="email" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td><input type="password" name="password" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="submit" value="Login" /></td>
+                        <td><input type="reset" value="Reset" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">New User? <a href="register.jsp">Register Here</a></td>
+                    </tr>
+                </tbody>
+            </table>
+          
+        </form>
+<!-- /Login/SignIn Page -->
+<small> Sign in as <a href="admin_login.html"> Admin </a></small>
+
+<!-- <%@include file="footer.html" %> -->
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script src="https://kit.fontawesome.com/2a534a6860.js" crossorigin="anonymous"></script>
+<style>
+
+   body{ 
+      margin:0;
+      padding:0;
+      background-image: url('images/Online-Flight-Booking-Offers.jpg');
+	  background-size:cover;
+   }
+  .login-box{
+     width:280px;
+     position:absolute;
+     top:50%;
+     left:50%;
+     transform: translate(-50%,-50%);
+     color:white;
+     background-color:black;
+     opacity: 0.7;
+}
+   
+   .login-box h1{
+     float:left;
+     font-size:40px;
+     border-bottom:6px solid #3fe434;
+     margin-bottom:10px;
+     padding:13px 0px; 
+   }
+   
+   .inputBox{
+   width:100%;
+   overflow:hidden;
+   font-size:20px;
+   padding:8px 0;
+   border-bottom:2px solid #3fe434;
+   }
+   
+   .inputBox i{
+   width:24px;
+   float:left;
+   margin-top:18px;
+   text-align:center;
+   
+   }
+   
+   .inputBox input{
+   border:none;
+   outline:none;
+   background:none;
+   color:white;
+   margin-left:10px;
+   font-size:18px;
+   float:left;
+   margin-top:20px;   
+   }
+
+   ::-webkit-input-placeholder{
+   color:white; 
+   }
+   
+   .btn{
+   width:100%;
+   height:40px;
+   background:none;
+   color:white;
+   font-size:18px;
+   margin-top:30px;
+   border-color: #3fe434;
+   outline:none;
+   }
+
+</style>
+</head>
+
+<body>  
+        
+       <div class="login-box">
+          <h1> Login </h1>
+          <form method="post" action="ValidationController">
+              <input type="hidden" name="command" value="LOGIN">     
+		         <div class="inputBox">
+		               <i class="fas fa-envelope"></i>
+		               <label>Email ID</label>
+		               <input type="email" name="email">
+		         </div>
+		         <div class="inputBox">
+		               <i class="fas fa-lock"></i>
+		               <label>Password</label>
+		               <input type="password" name="password">
+		         </div>
+		         <input type="submit" value="Login" />
+        New User? <a href="register.jsp">Register Here</a>
+       </form>
+       </div>
+     
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>  You have successfully Logged out</h1>
+<button onclick="window.location.href='login.html';returnfalse;" style="margin-left:40px;padding: 10px 24px;font-size: 16px;background-color: #00cc00;cursor:pointer;border-radius:12px"> Login Again</button>
+</body>
+</html>
+
+<%@page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>  
+<%@page import="java.util.*,com.*" %>  
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="my-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+         
+ <div id="option-container" style="border:2px solid black;background-color:white;opacity:0.9;margin: auto;width:50%;padding:15px;">
+ <h2>MY ORDERS</h2><br>
+ 
+ <% List<BookingDetails> orders = (List<BookingDetails> )request.getAttribute("ORDER_LIST"); 
+ 
+  for(BookingDetails order : orders) {
+	  
+	out.println("______________________________________________"+"<br>");	  
+    out.println("Full Name: "+ order.getFullName()+"<br>");
+    out.println("Age: "+ order.getAge()+"<br>");
+    out.println("Email: "+ order.getEmail()+"<br>");
+    out.println("Date: "+ order.getDate()+"<br>");
+    out.println("Source: "+ order.getBookedflight().getSource()+"<br>");
+    out.println("Destination: "+ order.getBookedflight().getDestination()+"<br>");
+    out.println("No of People: "+ order.getNo_of_ppl()+"<br>");
+    out.println("Total Fare: "+ order.getBookedflight().getFare()*order.getNo_of_ppl()+"<br>");
+    
+    out.println("______________________________________________"+"<br>");
+}
+  %>
+  
+ <button  style="margin-left:40px;padding: 10px 24px;font-size: 16px;background-color: #00cc00;cursor:pointer;border-radius:12px" onclick="window.location.href='my-profile.jsp';return false;">BACK TO PROFILE</button> 
+ </div>
+ 
+ <%@page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>  
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="my-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+            <c:url var="detailsLink" value="ActivityController">
+             <c:param name="command" value="DETAILS"/>                            
+            </c:url>
+            <c:url var="ordersLink" value="ActivityController">
+             <c:param name="command" value="ORDERS"/>                            
+            </c:url>
+         
+ <div id="option-container" style="border:2px solid black;background-color:white;opacity:0.9;margin: auto;width:50%;padding:15px;">
+ <h2>MY PROFILE</h2>
+    <div id="options">
+      <div class="option" style="display: inline-block;margin-right:40px;margin-left:40px;">
+         <img alt="details" src="images/67-512-removebg-preview.png"><br>
+         <button style="margin-left:40px" onclick="window.location.href='${detailsLink}';return false;">MY DETAILS</button>      
+      </div>
+        <div class="option" style="display: inline-block;margin-right:40px;margin-left:40px;">
+         <img alt="orders" src="images/plane-air-ticket-circle-icon-vector-8543584-removebg-preview.png"><br>
+         <button  style="margin-left:50px" onclick="window.location.href='${ordersLink}';return false;">MY ORDERS</button>      
+      </div>    
+    </div>
+ </div>
+ 
+ <!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+label {
+  display: inline-block;
+  width: 180px;
+  text-align: right;
+  padding:3px;
+  margin:2px;
+}
+​body{
+  margin:auto;
+  top:10%;
+  }
+#payment-box{
+  border:1px solid black;
+  margin:auto !important;
+  width:40%;
+  height:350px;
+  }
+#icons{
+  float:right;
+}  
+input{
+padding:3px;
+margin:2px;
+}
+p,h3{
+  margin-left:50px;
+}
+#pyt-btn{
+margin-left:50px;
+background:green;
+color:white;
+width:70%;
+}
+</style>
+</head>
+
+<body>
+<div id="payment-container">
+
+    <h2> CHECKOUT</h2>
+    <div id="payment-box">
+    <form action="BookingController" method="get">
+    <input type="hidden" name="command" value="PAY">
+      <h3> DEBIT/CREDIT CARD PAYMENT</h3>
+      <div id="icons"> <img src="https://img.icons8.com/color/36/000000/visa.png"> <img src="https://img.icons8.com/color/36/000000/mastercard.png"> <img src="https://img.icons8.com/color/36/000000/amex.png"> </div><br> <br>
+      <br>
+      <label>CARD NUMBER</label>
+      <input type="text" placeholder="Valid 16 digit Card Number" required><br>
+      
+      <label>EXPIRATION DATE</label>
+      <input type="text"  placeholder="MM/YY" required><br>
+      
+      <label>CVV CODE</label>
+      <input type="text" placeholder="CVC" required><br>
+      
+      <label>COUPON CODE</label>
+      <input type="text" placeholder=""><br>
+      <% float fare=Float.parseFloat((String)session.getAttribute("book_fare"))* Integer.parseInt((String)session.getAttribute("book_no_of_ppl")) ; %>   
+      <p>You are making a payment of: Rs.<b><%=fare %> </b></p>
+      <input type="submit" value="MAKE PAYMENT" id="pyt-btn"> 
+    </form>
+     </div>
+</div>
+
+</body>
+</html>
+
+payment-success.jsp:
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="my-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+<div id="msg-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:60%;padding:15px;">
+   <div style="margin-left:150px;">
+   <img src="images/thank-you.png">
+   <h2 style="margin-left:70px;">PAYMENT SUCCESSFUL!</h2>
+   <h4 style="margin-left:50px;"> Congratulations! Your booking is confirmed!</h4>
+   <button  style="margin-left:-40px" onclick="window.location.href='home.jsp';return false;">Back to Home Page</button>
+   <button style="float:right;margin-right:150px" onclick="window.location.href='my-profile.jsp';return false;">View My Order</button>
+   </div>
+</div> 
+
+<%@page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@page import="java.util.*,com.Flight" %>    
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>  
+<%@include file="header.html" %>
+<%@ page session="false" %> 
+<div id="navbar">
+  <ul>
+     <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="my-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+    <!-- Flight Details -->
+  <h2 style="margin-left:40px;color:white"> DOMESTIC FLIGHTS</h2>
+  <div id="search-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+  <h3> Search your Flight</h3>
+  <form method="get" action="BookingController">
+    <input type="hidden" name="command" value="SEARCH">
+<!-- <input type="radio" name="flight-class" value="Business"> Business
+     <input type="radio"  name="flight-class" value="Economy"> Economy <br><br> -->   
+     <label>Source</label>
+     <input type="text" name="source" id="source" placeholder="New Delhi">
+     <label>Destination</label>
+     <input type="text" name="destination" id="destination" placeholder="Bangalore">
+     <label>Date</label>
+     <input type="date" name="date" id="date">
+     <label>Number of Passengers</label>
+     <select name="no-of-people">
+         <option value="1">Select</option>
+        <c:forEach varStatus="loop" begin = "1" end = "15">
+         <option value="${loop.index}">${loop.index} </option>
+      </c:forEach>
+     </select><br><br>
+     <input type="submit" name="submit" id="submit" value="Search" style="padding: 10px 24px;font-size: 16px;background-color: #00cc00;cursor:pointer;border-radius: 12px;"><br><br>
+     
+  </form><br>
+ 
+    
+  <span id="error" style="text-align: center;"></span><br>
+  </div>
+  
+   <!-- /Flight Details -->
+  
+  <!-- Search Results Table -->
+   <div id="data-container" style="border:2px solid black;background-color:white;opacity:0.8;margin: auto;width:80%;padding:15px;">
+     <!-- Put new button: Clear Results -->
+      <input type="button" value="Reset" onclick="window.location.href='home.jsp';return false;"class="reset-search-button">
+    
+      <table border="1" style="margin: auto;">
+        <thead>
+         <tr>
+            <th>Flight ID </th>
+            <th>Airlines </th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Arrival </th>
+            <th>Departure </th>
+            <th>Duration</th>
+            <th>Airport Name </th>
+             <th>Total No.of Stops </th>
+            <th>Available Seats</th>
+            <th>Price</th>
+            <th>Action</th>
+         </tr>  
+         </thead>
+         <tbody>
+         
+         <c:forEach var="flight" items="${FLIGHT_LIST}">
+        
+         <!-- Set up a unique link for each flight (using Flight ID)-->
+         
+         <tr>
+         <c:url var="tempLink" value="BookingController">
+             <c:param name="command" value="BOOK"/>
+             <c:param name="flightID" value="${flight.flightNo}"/>
+             <c:param name="fare" value="${flight.fare}"/> 
+             <c:param name="source" value="${flight.source}"/>
+             <c:param name="destination" value="${flight.destination}"/> 
+             <c:param name="airline" value="${flight.airline}"/>                     
+         </c:url>
+  <%
+       List<Flight> fl = new ArrayList<>();
+       fl= (List<Flight>)request.getAttribute("FLIGHT_LIST");
+	   for(int i=0; i< fl.size() ;i++)
+	   {
+		   System.out.println("from jsp");
+		System.out.println(fl.get(i));
+	   }
+  
+  %>        
+            <td>${flight.flightNo}</td>
+            <td>  ${flight.airline}</td>
+            <td> ${flight.source} </td>
+             <td> ${flight.destination}</td>
+             <td>  ${flight.departure}</td>
+            <td> ${flight.arrival} </td>
+             <td> ${flight.duration}</td>
+            <td> ${flight.airportName} </td>
+             <td> ${flight.totalStops}</td>
+            <td>  ${flight.availableSeats}</td>
+            <td> ${flight.fare} </td>
+            <td><input type="button" value="BOOK NOW!" style="background-color: #008CBA;color:white;cur" onclick="window.location.href='${tempLink}';return false;"
+             class="book-now-button"> </td>
+         </tr>
+     </c:forEach>
+     </tbody> 
+     </table>
+    
+    </div>
+signup.html:
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<script src="https://kit.fontawesome.com/2a534a6860.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<title>Insert title here</title>
+</head>
+<body>
+
+ <h1 id="title-head">Flyaway Flight Booking</h1>
+       <div class="login-box">
+          <h1> Sign Up </h1>
+          <form method="post" action="ValidationController">
+              <input type="hidden" name="command" value="SIGNUP">  
+                <div class="inputBox">
+		               <i class="fas fa-user"></i>
+		               <label>First Name</label>
+		               <input class="input-field" type="text" name="firstName" placeholder="Enter your First name" required autofocus>
+		         </div><br>
+		          <div class="inputBox">
+		               <i class="fas fa-user"></i>
+		               <label>Last Name</label>
+		               <input class="input-field" type="text" name="lastName" placeholder="Enter your Last name" required>
+		         </div><br>   
+		         <div class="inputBox">
+		               <i class="fas fa-envelope"></i>
+		               <label>Email ID</label>
+		               <input class="input-field" type="email" name="email" placeholder="Enter your email" required>
+		         </div><br>
+		          <div class="inputBox">
+		               <i class="fas fa-phone"></i>
+		               <label>Phone Number</label>
+		               <input class="input-field" type="text" name="phno" placeholder="Enter your phone number" required>
+		         </div><br>
+		         <div class="inputBox">
+		               <i class="fas fa-lock"></i>
+		               <label>Password</label>
+		               <input class="input-field" type="password" name="password" placeholder="Enter your password" required>
+		         </div><br>
+		         <input type="checkbox" required value="tandc"><small>Agree to Terms & Conditions</small> <br>
+		         <input type="submit" value="SIGN UP" class="login-btn" />
+		    </form>
+		         <hr>
+		         <p class="or">OR</p>
+                 Already registered? <a href="login.html">Login Here</a>
+                 <hr>
+		         <p class="or">OR</p>
+                 <small> Sign in as <a href="admin_login.html"> Admin </a></small>                                                
+       
+       </div>
+
+
+</body>
+</html>
+
+user_details.jsp:
+<%@page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>  
+<%@page import="com.*"%>
+
+<%@include file="header.html" %>
+<div id="navbar">
+  <ul>
+     <li><a href="home.jsp">Hi User </a> </li>
+     <li><a href="my-profile.jsp">MY PROFILE</a> </li>
+     <li><a href="LogoutServlet" onclick="if(!(confirm('Are you sure you want to logout?')))return false">LOGOUT </a></li>
+  </ul>
+</div>
+ 
+ <% User user= (User)session.getAttribute("USER_DETAILS"); %>
+         
+ <div id="option-container" style="border:2px solid black;background-color:white;opacity:0.9;margin: auto;width:50%;padding:15px;">
+ <h2>MY DETAILS</h2>
+     
+     <table>
+        <tr>
+           <td>First Name:</td>
+           <td><%= user.getFname() %></td>
+        </tr>
+         <tr>
+           <td>Last Name:</td>
+           <td><%=user.getLname() %></td>
+        </tr>
+         <tr>
+         
+         <td>Email:</td>
+           <td><%=user.getEmail() %></td>
+        </tr>
+         <tr>
+           <td>Phone Number:</td>
+           <td><%=user.getPhoneno() %></td>
+        </tr>     
+     </table>
+    
+ <button  style="margin-left:40px;padding: 10px 24px;font-size: 16px;background-color: #00cc00;cursor:pointer;border-radius:12px" onclick="window.location.href='my-profile.jsp';return false;">BACK TO PROFILE</button>     <button  style="margin-left:40px" onclick="window.location.href='my-profile.jsp';return false;">BACK TO PROFILE</button>      
+       
+ 
+ </div>
+ 
+ pom.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com</groupId>
+  <artifactId>flyaway-booking</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>flyaway-booking Maven Webapp</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+		<!-- Connector J for JDBX -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.21</version>
+		</dependency>
+		<dependency>
+		    <groupId>jstl</groupId>
+		    <artifactId>jstl</artifactId>
+		    <version>1.2</version>
+		</dependency>
+		<dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+	</dependencies>
+
+  <build>
+    <finalName>flyaway-booking</finalName>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.2.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
+
+context.xml:
+<Context>
+
+  <Resource name="jdbc/flight_booking" 
+  			auth="Container" type="javax.sql.DataSource"
+               maxActive="20" maxIdle="5" maxWait="10000"
+               username="root" password="root@123" 
+               driverClassName="com.mysql.cj.jdbc.Driver"
+               url="jdbc:mysql://localhost:3306/flight_booking"/>
+</Context>
+
+
