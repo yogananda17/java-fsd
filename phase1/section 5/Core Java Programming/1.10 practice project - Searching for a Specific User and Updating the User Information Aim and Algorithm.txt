@@ -1,0 +1,17 @@
+git url link:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+Aim:Create a Spring MVC web application that will retrieve users based on their user ID
+
+Algorithm:
+Step 1:Start the program.
+Step 2:create a dynamic web project
+Step 3:convert to maven project
+Step 4:Add dependencies.
+Step 5:create a web.xml file add dispatcher
+Step 6:create dispatcher-servlert.xml file
+Step 7:add DriverManagerSource and property
+Step 8:create jsp files 
+Step 9:create user.java class and Dao,Controller,Service class
+Step 10:run the program
+Step 11:stop the program

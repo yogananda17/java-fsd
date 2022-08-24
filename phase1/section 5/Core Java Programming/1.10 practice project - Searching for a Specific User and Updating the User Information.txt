@@ -1,0 +1,506 @@
+user.java
+
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class User {
+	@Id
+	private int uid;
+	private String uname;
+	private float usalary;
+	@Override
+	public String toString() {
+		return "User [uid=" + uid + ", uname=" + uname + ", usalary=" + usalary + "]";
+	}
+	public int getUid() {
+		return uid;
+	}
+	public void setUid(int uid) {
+		this.uid = uid;
+	}
+	public String getUname() {
+		return uname;
+	}
+	public void setUname(String uname) {
+		this.uname = uname;
+	}
+	public float getUsalary() {
+		return usalary;
+	}
+	public void setUsalary(float usalary) {
+		this.usalary = usalary;
+	}
+
+}
+
+//userController
+package com.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+
+import com.bean.User;
+import com.service.UserService;
+
+
+
+@Controller
+public class UserController {
+	
+	@Autowired
+	UserService userService;
+	@RequestMapping(value = "storeUser", method=RequestMethod.POST)
+	public ModelAndView storeUser(HttpServletRequest req,User user) {
+		int uid= Integer.parseInt(req.getParameter("uid"));
+		String uname = req.getParameter("uname");
+		float usalary= Float.parseFloat(req.getParameter("usalary"));
+		
+		user.setUid(uid);
+		user.setUname(uname);
+		user.setUsalary(usalary);
+		
+		String result = userService.storeUser(user);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("msg",result);
+		mav.setViewName("storeUser.jsp");
+		return mav;
+		
+	}
+	@RequestMapping(value = "updateUser", method=RequestMethod.POST)
+	public ModelAndView updateUser(HttpServletRequest req,User user) {
+		int uid= Integer.parseInt(req.getParameter("uid"));
+		String uname = req.getParameter("uname");
+		float usalary= Float.parseFloat(req.getParameter("usalary"));
+		
+		
+		
+		user.setUid(uid);
+		user.setUname(uname);
+		user.setUsalary(usalary);
+		
+		
+		
+		
+		String result = userService.updateUser(user);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("msg",result);
+		mav.setViewName("updateUser.jsp");
+		return mav;
+		
+	}
+	@RequestMapping(value = "searchUser", method=RequestMethod.GET)
+	public ModelAndView searchUser(HttpServletRequest req) {
+		int uid= Integer.parseInt(req.getParameter("uid"));
+		
+		
+		
+		
+		
+		String result = userService.searchUserById(uid);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("msg",result);
+		mav.setViewName("searchUser.jsp");
+		return mav;
+
+}
+	@RequestMapping(value = "findUser", method=RequestMethod.GET)
+	public ModelAndView findAllUser(HttpServletRequest req) {
+		
+		
+		
+		
+		List<User> listOfUser = userService.getAllUser();
+		
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("listOfUser", listOfUser);
+		mav.setViewName("listOfUser.jsp");
+		mav.setViewName("viewAllUser.jsp");
+		return mav;
+}
+
+}
+
+
+//userDao
+package com.dao;
+
+import java.util.List;
+
+
+import javax.persistence.TypedQuery;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+
+import com.bean.User;
+import com.bean.User;
+
+@Repository
+public class UserDao {
+	
+	@Autowired
+    SessionFactory sf;
+	
+	public int storeUserDetails(User user) {
+		try {
+			
+			Session session = sf.openSession();
+			Transaction tran = session.getTransaction();
+			tran.begin();
+					session.save(user);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+
+}
+	public int updateUser(User user) {
+		Session session = sf.openSession();
+		Transaction tran = session.getTransaction();
+		User u = session.get(User.class, user.getUid());
+		if(u==null) {
+			return 0;
+		} else {
+			tran.begin();
+			    u.setUname(user.getUname());
+			    u.setUsalary(user.getUsalary());
+			    
+			    session.saveOrUpdate(u);
+			tran.commit();
+			return 1;
+		}
+}
+	public User searchUserById(int uid) {
+		Session session = sf.openSession();
+		
+		User u = session.get(User.class, uid);
+		return u;
+}
+
+public List<User> getAllUser() {
+	Session session = sf.openSession();
+	TypedQuery qry = session.createQuery("select u from User u");
+	List<User> listOfUser = qry.getResultList();
+	return listOfUser;
+}
+}
+
+//UserService
+package com.service;
+
+import java.util.List;
+
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+import com.bean.User;
+
+import com.dao.UserDao;
+
+@Service
+public class UserService {
+	@Autowired
+    UserDao userDao;
+	
+	public String storeUser(User user) {
+		if(user.getUsalary()<1000) {
+			return "Product price must be > 1000";
+		} else if(userDao.storeUserDetails(user)>0) {
+			return "User details Store successfully";
+		} else {
+			return "User details didn't store";
+		}
+		}
+	public String updateUser(User user) {
+		if(userDao.updateUser(user)>0) {
+			return "user updated successfully";
+		} else {
+			return "user didn't update";
+		}
+}
+	public String searchUserById(int uid) {
+		User u = userDao.searchUserById(uid);
+	    if(u==null) {
+			return "user not present";
+		} else {
+			return u.toString();
+		}
+
+}
+	public List<User> getAllUser() {
+		return userDao.getAllUser();
+	}
+}
+
+//pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>SpringMVCProject1</groupId>
+  <artifactId>SpringMVCProject1</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>15</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.3</version>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+  <dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.16</version>
+</dependency>
+
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.5.6.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jdbc</artifactId>
+    <version>5.2.12.RELEASE</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>5.2.12.RELEASE</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-orm</artifactId>
+    <version>5.2.12.RELEASE</version>
+</dependency>
+  </dependencies>
+</project>
+
+//web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+  <display-name>SpringMVCProject1</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+  </welcome-file-list>
+  <servlet>
+  	<servlet-name>dispatcher</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  		<servlet-name>dispatcher</servlet-name>
+  		<url-pattern>/</url-pattern>
+  </servlet-mapping>
+</web-app>
+
+//dispatcher-servlet.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+		
+		<context:component-scan base-package="com"></context:component-scan>
+
+<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="ds" scope="singleton">
+	<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+	<property name="url" value="jdbc:mysql://localhost:3306/javatraining"></property>
+	<property name="username" value="root"></property>
+	<property name="password" value="root@123"></property>
+</bean>
+
+<bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"  id="sf" scope="singleton">
+	<property name="dataSource" ref="ds"></property>
+	
+	<property name="annotatedClasses">
+	<list>
+		<value>com.bean.User</value>
+	</list>
+	</property>
+	
+	<property name="hibernateProperties">
+		<props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+		</props>
+	</property>
+	
+</bean>
+
+
+</beans>
+
+//index.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>User Details</h2>
+
+<a href="storeUser.jsp">Add User</a> |
+<a href="updateUser.jsp">update User</a> |
+
+<a href="searchUser.jsp">Search User</a> |
+<a href="findUser">View All User</a> |
+</body>
+</html>
+
+//searchUser.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+${requestScope.msg}
+<h2>Search User</h2>
+<form action="searchUser" method="get">
+    <label>UId</label>
+    <input type="number" name="uid"><br/>
+    
+    
+    <input type="submit" value="Search User"/>
+    <input type="reset" value="reset"/>
+    
+</form>
+<br/>
+<a href="index.jsp">Back</a>
+
+</body>
+</html>
+
+//storeUser.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+${requestScope.msg}
+<h2>Add User</h2>
+<form action="storeUser" method="post">
+    <label>UId</label>
+    <input type="number" name="uid"><br/>
+    <label>UName</label>
+    <input type="text" name="uname"><br/>
+    <label>USalary</label>
+    <input type="text" name="usalary"><br/>
+    <input type="submit" value="Add User"/>
+    <input type="reset" value="reset"/>
+    
+</form>
+<br/>
+<a href="index.jsp">Back</a>
+
+</body>
+</html>
+
+//updateUser.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+${requestScope.msg}
+<h2>Update User</h2>
+<form action="updateUser" method="post">
+    <label>UId</label>
+    <input type="number" name="uid"><br/>
+    
+    
+    <label>Usalary</label>
+    <input type="text" name="usalary"><br/>
+    
+    <input type="submit" value="Update User"/>
+    <input type="reset" value="reset"/>
+    
+</form>
+<br/>
+<a href="index.jsp">Back</a>
+
+</body>
+</html>
+
+//viewAllUser.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+    <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2> All User Details</h2>
+
+<core:forEach items="${requestScope.listOfUser}" var="user">
+	
+	<span>Uname : ${user.uname} Usalary : ${user.usalary} </span>
+</core:forEach>
+<br/>
+<a href="index.jsp">Back</a>
+
+</body>
+</html>
