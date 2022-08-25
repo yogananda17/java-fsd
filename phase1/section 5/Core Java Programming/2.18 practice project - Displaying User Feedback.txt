@@ -1,0 +1,223 @@
+//DemoTest
+package com.main;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+@SpringBootApplication(scanBasePackages="com")
+@EntityScan(basePackages="com.bean")
+public class DemoTest {
+	
+	public static void main(String[] args) {
+		SpringApplication.run(DemoTest.class, args);
+		System.out.println("Server up");
+	}
+
+}
+
+//user.java
+package com.bean;
+
+import javax.persistence.Entity;
+
+import javax.persistence.Id;
+
+@Entity
+public class User {
+	@Id
+	private int id;
+	private String name;
+	private String email;
+	private String feedback;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getFeedback() {
+		return feedback;
+	}
+	public void setFeedback(String feedback) {
+		this.feedback = feedback;
+	}
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", email=" + email + ", feedback=" + feedback + "]";
+	}
+	public User(int id, String name, String email, String feedback) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.feedback = feedback;
+	}
+	public User() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+}
+
+//userController
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bean.User;
+import com.service.UserService;
+
+
+@RestController
+public class UserController {
+	
+	@Autowired
+	UserService userservice;
+	
+	 
+		
+		
+		@RequestMapping(value = "storeUser",consumes = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
+		public String storeUser(@RequestBody User u) {		 
+			return userservice.storeUser(u);
+	
+	
+}
+}
+
+
+//userDao
+package com.dao;
+
+import javax.persistence.EntityManager;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+
+import com.bean.User;
+
+@Repository
+public class UserDao {
+	
+	@Autowired
+	EntityManagerFactory emf;
+	public User getUserDetails(int id) {
+		EntityManager manager = emf.createEntityManager();				 
+		User u = manager.find(User.class, id);					
+		return u;
+	}
+	
+	public int storeUser(User us) {
+		try {
+			EntityManager manager = emf.createEntityManager();
+			EntityTransaction tran = manager.getTransaction();
+			tran.begin();
+			    manager.persist(us);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+	
+	
+
+}
+
+
+//userFeedback
+package com.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+import com.bean.User;
+import com.dao.UserDao;
+
+
+@Service
+public class UserService {
+	@Autowired
+    
+	
+	UserDao userDao;
+	
+	public  String storeUser(User u) {
+		if(userDao.storeUser(u)>0) {
+			return "Feedback stored successfully";
+		}else {
+			return "Feedback didn't store";
+		}
+}
+
+}
+
+//application-properties
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/javatraining
+spring.datasource.username=root
+spring.datasource.password=root@123
+
+//pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>MyProject</groupId>
+  <artifactId>SpringBootWithRESTProject2</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+  <dependencies>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <version>2.5.2</version>
+</dependency>
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-jpa</artifactId>
+	<version>2.5.2</version>
+</dependency>
+
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.16</version>
+</dependency>
+<dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.2.12</version>
+</dependency>
+
+  </dependencies>
+</project>

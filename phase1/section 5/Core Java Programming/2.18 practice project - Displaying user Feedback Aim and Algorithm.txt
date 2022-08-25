@@ -1,0 +1,16 @@
+git Url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+Aim:Create a Spring Boot project that will capture user feedback using a REST endpoint.
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:create maven project
+Step 3:Add dependencies in pom.xml file
+Step 4:Update the maven project
+Step 5:create application,properties file
+Step 6:create DemoTest.java 
+Step 7:create contoller,dao,service classes
+Step 8:run the program
+Step 9:stop the program
