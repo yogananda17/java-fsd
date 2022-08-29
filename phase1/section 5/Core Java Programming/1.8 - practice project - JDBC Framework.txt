@@ -1,0 +1,509 @@
+//pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>SpringMVCWithHibernate</groupId>
+  <artifactId>SpringMVCWithHibernate</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.3</version>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+  <dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.16</version>
+</dependency>
+
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.5.6.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jdbc</artifactId>
+    <version>5.2.12.RELEASE</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>5.2.12.RELEASE</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-orm</artifactId>
+    <version>5.2.12.RELEASE</version>
+</dependency>
+  </dependencies>
+</project>
+
+//product.java
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Product {
+	@Id
+	private int pid;
+	private String pname;
+	private float price;
+	private String url;
+	public int getPid() {
+		return pid;
+	}
+	public void setPid(int pid) {
+		this.pid = pid;
+	}
+	public String getPname() {
+		return pname;
+	}
+	public void setPname(String pname) {
+		this.pname = pname;
+	}
+	public float getPrice() {
+		return price;
+	}
+	public void setPrice(float price) {
+		this.price = price;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	@Override
+	public String toString() {
+		String myUrl = "<img src="+url+" width=150 height=150/>";
+		return "Product [pid=" + pid + ", pname=" + pname + ", price=" + price + ", url=" + url + "]";
+	}
+	
+
+}
+
+//ProductContoller
+package com.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.bean.Product;
+import com.service.ProductService;
+
+@Controller
+public class ProductController {
+	
+	@Autowired
+	ProductService productService;
+	@RequestMapping(value = "storeProduct", method=RequestMethod.POST)
+	public ModelAndView storeProduct(HttpServletRequest req,Product product) {
+		int pid= Integer.parseInt(req.getParameter("pid"));
+		String pname = req.getParameter("pname");
+		float price = Float.parseFloat(req.getParameter("price"));
+		String url = req.getParameter("url");
+		
+		product.setPid(pid);
+		product.setPname(pname);
+		product.setPrice(price);
+		product.setUrl(url);
+		
+		String result = productService.storeProduct(product);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("msg",result);
+		mav.setViewName("storeProduct.jsp");
+		return mav;
+		
+	}
+	@RequestMapping(value = "updateProduct", method=RequestMethod.POST)
+	public ModelAndView updateProduct(HttpServletRequest req,Product product) {
+		int pid= Integer.parseInt(req.getParameter("pid"));
+		
+		float price = Float.parseFloat(req.getParameter("price"));
+		String url = req.getParameter("url");
+		
+		product.setPid(pid);
+		
+		product.setPrice(price);
+		product.setUrl(url);
+		
+		String result = productService.updateProduct(product);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("msg",result);
+		mav.setViewName("updateProduct.jsp");
+		return mav;
+		
+	}
+	@RequestMapping(value = "deleteProduct", method=RequestMethod.GET)
+	public ModelAndView deleteProduct(HttpServletRequest req) {
+		int pid= Integer.parseInt(req.getParameter("pid"));
+		
+		
+		
+		
+		
+		String result = productService.deleteProduct(pid);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("msg",result);
+		mav.setViewName("deleteProduct.jsp");
+		return mav;
+
+}
+	@RequestMapping(value = "searchProduct", method=RequestMethod.GET)
+	public ModelAndView searchProduct(HttpServletRequest req) {
+		int pid= Integer.parseInt(req.getParameter("pid"));
+		
+		
+		
+		
+		
+		String result = productService.searchProductById(pid);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("msg",result);
+		mav.setViewName("searchProduct.jsp");
+		return mav;
+
+}
+	@RequestMapping(value = "findProduct", method=RequestMethod.GET)
+	public ModelAndView findAllProductProduct(HttpServletRequest req) {
+		
+		
+		
+		
+		List<Product> listOfProduct = productService.getAllProduct();
+		
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("listOfProduct", listOfProduct);
+		mav.setViewName("listOfProduct.jsp");
+		mav.setViewName("viewAllProduct.jsp");
+		return mav;
+}
+}
+
+
+//ProductDao
+package com.dao;
+
+import java.util.List;
+
+import javax.persistence.TypedQuery;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.bean.Product;
+
+@Repository
+public class ProductDao {
+	
+	@Autowired
+	SessionFactory sf;
+	
+	public int storeProductDetails(Product product) {
+		try {
+			//Configuration con = new Configuration();
+			//con.configure("hibernate.cfg.xml");
+			//SessionFactory sf = con.buildSessionFactory();
+			Session session = sf.openSession();
+			Transaction tran = session.getTransaction();
+			tran.begin();
+					session.save(product);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+		
+	}
+	public int updateProduct(Product product) {
+		Session session = sf.openSession();
+		Transaction tran = session.getTransaction();
+		Product p = session.get(Product.class, product.getPid());
+		if(p==null) {
+			return 0;
+		} else {
+			tran.begin();
+			    p.setPrice(product.getPrice());
+			    p.setUrl(product.getUrl());
+			    session.saveOrUpdate(p);
+			tran.commit();
+			return 1;
+		}
+	}
+		public int deleteProduct(int pid) {
+			Session session = sf.openSession();
+			Transaction tran = session.getTransaction();
+			Product p = session.get(Product.class, pid);
+			if(p==null) {
+				return 0;
+			} else {
+				tran.begin();
+				    
+				    session.delete(p);
+				tran.commit();
+				return 1;
+	}
+		}
+		    public Product searchProductById(int pid) {
+			Session session = sf.openSession();
+			
+			Product p = session.get(Product.class, pid);
+			return p;
+	}
+	public List<Product> getAllProduct() {
+		Session session = sf.openSession();
+		TypedQuery qry = session.createQuery("select p from Product p");
+		List<Product> listOfProduct = qry.getResultList();
+		return listOfProduct;
+	}
+}
+
+
+//ProductService
+package com.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bean.Product;
+import com.dao.ProductDao;
+
+@Service
+public class ProductService {
+	
+	@Autowired
+	ProductDao productDao;
+	
+	public String storeProduct(Product product) {
+		if(product.getPrice()<1000) {
+			return "Product price must be > 1000";
+		} else if(productDao.storeProductDetails(product)>0) {
+			return "Product details Store successfully";
+		} else {
+			return "Product details didn't store";
+		}
+	}
+	
+	public String updateProduct(Product product) {
+		if(productDao.updateProduct(product)>0) {
+			return "record updated successfully";
+		} else {
+			return "Record didn't update";
+		}
+	}
+	public String deleteProduct(int pid) {
+		if(productDao.deleteProduct(pid)>0) {
+			return "record deleted successfully";
+		} else {
+			return "Record not present";
+		}
+	}
+	public String searchProductById(int pid) {
+		Product p = productDao.searchProductById(pid);
+	    if(p==null) {
+			return "record not present";
+		} else {
+			return p.toString();
+		}
+
+}
+	public List<Product> getAllProduct() {
+		return productDao.getAllProduct();
+	}
+}
+
+//index.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Product Management System</h2>
+<a href="storeProduct.jsp">Add Product</a> |
+<a href="updateProduct.jsp">update Product</a> |
+<a href="deleteProduct.jsp">Delete Product</a> |
+<a href="searchProduct.jsp">Search Product</a> |
+<a href="findProduct">View All Product</a> |
+</body>
+</html>
+
+
+//storeProduct.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+${requestScope.msg}
+<h2>Add Product</h2>
+<form action="storeProduct" method="post">
+    <label>PId</label>
+    <input type="number" name="pid"><br/>
+    <label>PName</label>
+    <input type="text" name="pname"><br/>
+    <label>Price</label>
+    <input type="number" name="price"><br/>
+    <label>URL</label>
+    <input type="url" name="url"><br/>
+    <input type="submit" value="Add Product"/>
+    <input type="reset" value="reset"/>
+    
+</form>
+<br/>
+<a href="index.jsp">Back</a>
+</body>
+</html>
+
+
+//viewAllProduct.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+    <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2> All Product Details</h2>
+
+<core:forEach items="${requestScope.listOfProduct}" var="product">
+	<img src="${product.url}" width="200" height="200">
+	<span>Name : ${product.pname} Price : ${product.price} </span>
+</core:forEach>
+<br/>
+<a href="index.jsp">Back</a>
+    
+
+</body>
+</html>
+
+//Search.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+${requestScope.msg}
+<h2>Search Product</h2>
+<form action="searchProduct" method="get">
+    <label>PId</label>
+    <input type="number" name="pid"><br/>
+    
+    
+    <input type="submit" value="Search Product"/>
+    <input type="reset" value="reset"/>
+    
+</form>
+
+</body>
+</html>
+
+
+//updateProduct.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+${requestScope.msg}
+<h2>Update Product</h2>
+<form action="updateProduct" method="post">
+    <label>PId</label>
+    <input type="number" name="pid"><br/>
+    
+    <label>Price</label>
+    <input type="number" name="price"><br/>
+    <label>URL</label>
+    <input type="url" name="url"><br/>
+    <input type="submit" value="Update Product"/>
+    <input type="reset" value="reset"/>
+    
+</form>
+<br/>
+<a href="index.jsp">Back</a>
+</body>
+</html>
+
+//deleteProduct.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+${requestScope.msg}
+<h2>Delete Product</h2>
+<form action="deleteProduct" method="get">
+    <label>PId</label>
+    <input type="number" name="pid"><br/>
+    
+    
+    <input type="submit" value="Delete Product"/>
+    <input type="reset" value="reset"/>
+    
+</form>
+<br/>
+<a href="index.jsp">Back</a>
+
+
+</body>
+</html>

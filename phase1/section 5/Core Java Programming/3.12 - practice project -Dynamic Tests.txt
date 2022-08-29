@@ -1,0 +1,80 @@
+//pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>MyProject</groupId>
+  <artifactId>Dynamic</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+   <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-params</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.junit.vintage</groupId>
+    <artifactId>junit-vintage-engine</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+
+
+<!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>4.0.0</version>
+    <scope>test</scope>
+</dependency>
+  </dependencies>
+</project>
+
+//DynamicTest
+package com.test;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import javax.lang.model.type.ExecutableType;
+import org.junit.jupiter.api.testFactory;
+import org.junit.jupiter.api.DynamicTest.*;
+import org.junit.platform.runner.Junitplatform;
+
+@DisplayName("JUnit 5 Dynamic Tests Example")
+@RunWith(JUnitPlatform.class)
+public class DynamicTest {
+	
+	@TestFactory
+	Collection<DynamicTest> dynamicTests(){
+		return Arrays.asList(dynamicTest("simple dynamic test,()->assertTrue(true)"),
+				dynamicTest("My Execute Class",new MyExecutable()),
+				dynamicTest("Exception Executable",()->{throw new Exception("Exception Example");}),
+				dynamicTest("simple dynamic test-2",()->assertTrue(true))
+		);
+				
+	}
+		
+	}
+class MyExecutable implements ExecutableType {
+	@Override
+	public void execute() throws Throwable {
+		System.out.println("Hello World");
+	}
+}

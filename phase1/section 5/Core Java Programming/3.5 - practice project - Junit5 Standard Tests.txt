@@ -1,0 +1,118 @@
+//pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>MyProject</groupId>
+  <artifactId>JUnitExample</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+   <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-params</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.junit.vintage</groupId>
+    <artifactId>junit-vintage-engine</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+
+
+<!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>4.0.0</version>
+    <scope>test</scope>
+</dependency>
+  </dependencies>
+
+</project>
+
+
+//operation.java
+package com.service;
+
+public class Operation {
+	public int add(int a, int b) {
+		int add = a+b;
+		return add;
+	}
+	public int sub(int a, int b) {
+		int sub = a-b;
+		return sub;
+	}
+	public int mul(int a, int b) {
+		int mul = a*b;
+		return mul;
+	}
+	public int div(int a, int b) {
+		int div = a/b;
+		return div;
+
+}
+}
+
+
+//operationTest.java
+package com.test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+import com.service.Operation;
+
+class OperationTest {
+
+	@Test
+	void testAdd() {
+		//fail("Not yet implemented");
+		Operation op =new Operation();
+		int result = op.add(10, 20);
+		assertEquals(30, result);
+	}
+
+	@Test
+	void testSub() {
+		//fail("Not yet implemented");
+		Operation op =new Operation();
+		int result = op.sub(10, 20);
+		assertEquals(-10, result);
+	}
+
+	@Test
+	void testMul() {
+		//fail("Not yet implemented");
+		Operation op =new Operation();
+		int result = op.mul(5, 5);
+		assertEquals(25, result);
+	}
+
+	@Test
+	void testDiv() {
+		//fail("Not yet implemented");
+		Operation op =new Operation();
+		int result = op.div(10, 2);
+		assertEquals(5, result);
+	}
+
+}

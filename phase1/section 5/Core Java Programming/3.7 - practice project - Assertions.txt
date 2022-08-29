@@ -1,0 +1,194 @@
+//pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>MyProject</groupId>
+  <artifactId>JUnitExample</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+   <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-params</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.junit.vintage</groupId>
+    <artifactId>junit-vintage-engine</artifactId>
+    <version>5.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+
+
+<!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>4.0.0</version>
+    <scope>test</scope>
+</dependency>
+  </dependencies>
+
+</project>
+
+//Employee.java
+package com.bean;
+
+public class Employee {
+	private int id;
+	private String name;
+	private float salary;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public float getSalary() {
+		return salary;
+	}
+	public void setSalary(float salary) {
+		this.salary = salary;
+	}
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", salary=" + salary + "]";
+	}
+	
+
+}
+
+
+//EmployeeService
+package com.service;
+
+import java.util.ArrayList;
+
+import java.util.List;
+
+import com.bean.Employee;
+
+public class EmployeeService {
+	
+	public String checkUser(String emailid, String password) {
+		if(emailid.equals("eren@gmail.com") && password.equals("123")) {
+			return "success";
+					
+		} else {
+			return "failure";
+					
+		}
+	}
+	public Employee getEmployee() {
+		Employee emp = new Employee();
+		emp.setId(100);
+		emp.setName("raj");
+	    emp.setSalary(1200);
+	    return emp;
+				
+				
+	}
+	public List<Employee> listOfEmployee() {
+		List<Employee> listOfEmp = new ArrayList<Employee>();
+		Employee emp1 = new Employee();
+		emp1.setId(100);
+		emp1.setName("raj");
+		emp1.setSalary(1200);
+		
+		Employee emp2 = new Employee();
+		emp2.setId(200);
+		emp2.setName("ravi");
+		emp2.setSalary(12300);
+		listOfEmp.add(emp1);
+		listOfEmp.add(emp2);
+		return listOfEmp;
+		
+	}
+	public float passEmployeeObject(Employee emp) {
+		return emp.getSalary()+500;
+	}
+
+}
+
+
+//EmployeeServiceTest
+package com.test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import com.bean.Employee;
+import com.service.EmployeeService;
+
+class EmployeeServiceTest {
+
+	@Test
+	@DisplayName("check user details testing")
+	void testCheckUser() {
+		//fail("Not yet implemented");
+		EmployeeService es = new EmployeeService();
+		String result = es.checkUser("eren@gmail.com","123");
+		assertEquals("success", result);
+		
+		String result1 = es.checkUser("e@gmail.com","123");
+		assertEquals("failure", result1);
+	}
+
+	@Test
+	void testGetEmployee() {
+		//fail("Not yet implemented");
+		EmployeeService es = new EmployeeService();
+		Employee  emp = es.getEmployee();
+		assertNotNull(emp);
+		assertEquals(100, emp.getId());
+		assertEquals("raj", emp.getName());
+		assertEquals(1200, emp.getSalary());
+	}
+
+	@Test
+	void testListOfEmployee() {
+		//fail("Not yet implemented");
+		EmployeeService es = new EmployeeService();
+		List<Employee> listOfEmp = es.listOfEmployee();
+		assertEquals(2, listOfEmp.size());
+	}
+
+	@Test
+	void testPassEmployeeObject() {
+		//fail("Not yet implemented");
+		EmployeeService es = new EmployeeService();
+		Employee emp = new Employee();
+		emp.setId(100);
+		emp.setName("raj");
+		emp.setSalary(1200);
+		float UpdateSalary= es.passEmployeeObject(emp);
+		assertEquals(1700, UpdateSalary);
+	}
+
+}

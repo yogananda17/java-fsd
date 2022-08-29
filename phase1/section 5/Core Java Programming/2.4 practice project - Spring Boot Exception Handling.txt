@@ -1,0 +1,111 @@
+//EProduct.java
+package com.bean;
+
+public class EProduct {
+	private int id;
+	private String name;
+	private float price;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public float getPrice() {
+		return price;
+	}
+	public void setPrice(float price) {
+		this.price = price;
+	}
+	@Override
+	public String toString() {
+		return "EProduct [id=" + id + ", name=" + name + ", price=" + price + "]";
+	}
+	public EProduct(int id, String name, float price) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.price = price;
+	}
+	
+	
+
+}
+
+//EproductExceptionController
+package com.bean.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.bean.exceptions.ProductNotFoundException;
+
+
+public class EProductExceptionController {
+	@ExceptionHandler(value = ProductNotFoundException.class)
+	public ResponseEntity<String> exception(ProductNotFoundException
+exception){
+		return new ResponseEntity<String>("Product not found",
+HttpStatus.NOT_FOUND);
+		
+	}
+}
+
+
+//MainController
+package com.bean.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.bean.exceptions.ProductNotFoundException;
+
+@Controller
+public class MainController {
+	
+	@RequestMapping(value="/product/{id}",method = 
+RequestMethod.GET)
+	@ResponseBody
+	public String getProduct(@PathVariable("id")String id) {
+		if(id.contentEquals("0"))
+			throw new ProductNotFoundException();
+		return "product was found";
+	}
+
+}
+
+//ProductNotFoundException
+package com.bean.exceptions;
+
+public class ProductNotFoundException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+
+}
+
+
+//DemoTest.java
+package com.main;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication (scanBasePackages = "com")
+public class DemoTest {
+	public static void main(String[] args) {
+		SpringApplication.run(DemoTest.class, args);
+		System.out.println("Server Up...");
+		
+
+	}
+
+}
