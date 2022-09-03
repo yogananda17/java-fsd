@@ -1,0 +1,933 @@
+//OnlineExaminationApplication.java
+package com.example.OnlineExamination;
+
+import org.springframework.boot.SpringApplication;
+
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+
+
+@SpringBootApplication(scanBasePackages = "com")
+@EntityScan(basePackages = "com.bean")
+
+public class OnlineExaminationApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(OnlineExaminationApplication.class, args);
+		System.out.println("Server up!");
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//pom.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.11</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>OnlineExamination</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>OnlineExamination</name>
+	<description>Demo project for Spring Boot</description>
+	<properties>
+		<java.version>11</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+
+
+//application.properties
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/javatraining
+spring.datasource.username=root
+spring.datasource.password=root@123
+
+//login.java
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Login {
+	@Id
+	private String email;
+	private String password;
+	private String typeofuser;
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getTypeofuser() {
+		return typeofuser;
+	}
+	public void setTypeofuser(String typeofuser) {
+		this.typeofuser = typeofuser;
+	}
+	@Override
+	public String toString() {
+		return "Login [email=" + email + ", password=" + password + ", typeofuser=" + typeofuser + "]";
+	}
+	public Login(String email, String password, String typeofuser) {
+		super();
+		this.email = email;
+		this.password = password;
+		this.typeofuser = typeofuser;
+	}
+	public Login() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+
+}
+
+
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Questions {
+	@Id
+	private int qid;
+	private String question;
+	private String OA;
+	private String OB;
+	private String OC;
+	private String OD;
+	private String Ans;
+	public int getQid() {
+		return qid;
+	}
+	public void setQid(int qid) {
+		this.qid = qid;
+	}
+	public String getQuestion() {
+		return question;
+	}
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+	public String getOA() {
+		return OA;
+	}
+	public void setOA(String oA) {
+		OA = oA;
+	}
+	public String getOB() {
+		return OB;
+	}
+	public void setOB(String oB) {
+		OB = oB;
+	}
+	public String getOC() {
+		return OC;
+	}
+	public void setOC(String oC) {
+		OC = oC;
+	}
+	public String getOD() {
+		return OD;
+	}
+	public void setOD(String oD) {
+		OD = oD;
+	}
+	public String getAns() {
+		return Ans;
+	}
+	public void setAns(String ans) {
+		Ans = ans;
+	}
+	@Override
+	public String toString() {
+		return "Questions [qid=" + qid + ", question=" + question + ", OA=" + OA + ", OB=" + OB + ", OC=" + OC + ", OD="
+				+ OD + ", Ans=" + Ans + "]";
+	}
+	public Questions(int qid, String question, String oA, String oB, String oC, String oD, String ans) {
+		super();
+		this.qid = qid;
+		this.question = question;
+		OA = oA;
+		OB = oB;
+		OC = oC;
+		OD = oD;
+		Ans = ans;
+	}
+	public Questions() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+}
+	
+
+
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class QuizResults {
+	@Id
+	private int id;
+	private String email;
+	private String score;
+	public void setId(int id) {
+		this.id = id;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public void setScore(String score) {
+		this.score = score;
+	}
+	@Override
+	public String toString() {
+		return "QuizResults [id=" + id + ", email=" + email + ", score=" + score + "]";
+	}
+	public QuizResults(int id, String email, String score) {
+		super();
+		this.id = id;
+		this.email = email;
+		this.score = score;
+	}
+	public QuizResults() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+
+}
+
+
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class students {
+	@Id
+	private int id;
+	private String name;
+	private int age;
+	private String email;
+	private String password;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	@Override
+	public String toString() {
+		return "students [id=" + id + ", name=" + name + ", age=" + age + ", email=" + email + ", password=" + password
+				+ "]";
+	}
+	public students(int id, String name, int age, String email, String password) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.age = age;
+		this.email = email;
+		this.password = password;
+	}
+	public students() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+
+}
+
+
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class userQuiztable {
+	@Id
+	private int quid;
+	private String email;
+	private int qid;
+	private String UA;
+	public int getQuid() {
+		return quid;
+	}
+	public void setQuid(int quid) {
+		this.quid = quid;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmailid(String emailid) {
+		this.email = emailid;
+	}
+	public int getQid() {
+		return qid;
+	}
+	public void setQid(int qid) {
+		this.qid = qid;
+	}
+	public String getUA() {
+		return UA;
+	}
+	public void setUserAns(String uA) {
+		UA = uA;
+	}
+	@Override
+	public String toString() {
+		return "userQuiztable [quid=" + quid + ", email=" + email + ", qid=" + qid + ", UA=" + UA + "]";
+	}
+	public userQuiztable(int quid, String email, int qid, String userAns) {
+		super();
+		this.quid = quid;
+		this.email = email;
+		this.qid = qid;
+		UA = UA;
+	}
+	public userQuiztable() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+
+}
+
+
+package com.controller;
+
+
+
+
+
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+@RestController
+public class AdminController {
+	@RequestMapping(value="checkAdmin")
+	public String checkAdmin() {
+		return "Successfully login";
+	}
+
+	
+}
+
+
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bean.Login;
+import com.service.LoginService;
+
+
+
+@RestController
+public class LoginController {
+	
+	@Autowired
+	LoginService Loginservice;
+	@RequestMapping(value = "storeLoginDetails",consumes = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
+	public String storeLoginDetails(@RequestBody Login u) {		 
+		return Loginservice.storeLoginDetails(u);
+	 
+		
+		
+		
+
+}
+	
+	
+}
+
+
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import com.bean.Questions;
+import com.service.QuestionsService;
+
+
+
+@RestController
+public class QuestionsController {
+	@Autowired
+	QuestionsService questionsservice;
+	@RequestMapping(value = "storeQuestions",consumes = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
+	public String storeQuestions(@RequestBody Questions q) {
+		return questionsservice .storeQuestions(q);
+
+}
+	
+	// http://localhost:8080/findQuestionsById/1
+		@RequestMapping(value = "findQuestionsById/{id}",method = RequestMethod.POST)
+		public Questions findQuestionsById(@PathVariable("id") int qid) {
+			
+			return questionsservice.findQuestionsById(qid);
+			
+			
+}
+		
+		
+}
+
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bean.QuizResults;
+import com.service.QuizResultsService;
+
+@RestController
+public class QuizResultsController {
+	@Autowired
+	QuizResultsService quizresultsservice;
+	@RequestMapping(value = "checkResults",consumes = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
+	public String checkResults(@RequestBody QuizResults q) {
+		return quizresultsservice .checkResults(q);
+
+
+}
+}
+
+
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import com.bean.students;
+
+import com.service.StudentsService;
+
+@RestController
+public class studentsController {
+	@Autowired
+	StudentsService studentsservice;
+	@RequestMapping(value = "storeStudents",consumes = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
+	public String storeStudents(@RequestBody students s) {
+		return studentsservice .storeStudents(s);
+		
+		
+		
+		
+	
+	
+	
+	
+
+}
+}
+
+
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bean.userQuiztable;
+import com.service.userQuiztableService;
+
+@RestController
+public class userQuiztableController {
+	@Autowired
+	userQuiztableService userQuiztableservice;
+	@RequestMapping(value = "takeQuiz",consumes = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
+	public String takeQuiz(@RequestBody userQuiztable q) {
+		return userQuiztableservice .takeQuiz(q);
+
+	}
+}
+
+
+package com.dao;
+
+import javax.persistence.EntityManager;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.bean.Login;
+
+
+
+@Repository
+public class LoginDao {
+	
+	@Autowired
+	EntityManagerFactory emf;
+	public int storeLoginDetails(Login us) {
+		try {
+			
+			EntityManager manager = emf.createEntityManager();
+			EntityTransaction tran = manager.getTransaction();
+			tran.begin();
+			    manager.persist(us);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+
+}
+
+
+package com.dao;
+
+import javax.persistence.EntityManager;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+
+import com.bean.Questions;
+
+
+
+@Repository
+public class QuestionsDao {
+	
+	@Autowired
+	EntityManagerFactory emf;
+	public int storeQuestions(Questions q) {
+		try {
+			
+			EntityManager manager = emf.createEntityManager();
+			EntityTransaction tran = manager.getTransaction();
+			tran.begin();
+			    manager.persist(q);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+	public Questions getQuestionsDetails(int id) {
+		EntityManager manager = emf.createEntityManager();
+		Questions q = manager.find(Questions.class, id);
+		return q;
+	}
+
+
+}
+
+
+package com.dao;
+
+import javax.persistence.EntityManager;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+
+import com.bean.QuizResults;
+
+@Repository
+public class QuizResultsDao {
+	@Autowired
+	EntityManagerFactory emf;
+	public int checkResults(QuizResults q) {
+		try {
+			
+			EntityManager manager = emf.createEntityManager();
+			EntityTransaction tran = manager.getTransaction();
+			tran.begin();
+			    manager.persist(q);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	
+
+}
+}
+
+package com.dao;
+
+import javax.persistence.EntityManager;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+
+import com.bean.students;
+@Repository
+public class studentsDao {
+	
+	
+	
+	@Autowired
+	EntityManagerFactory emf;
+	public int storeStudents(students s) {
+		try {
+			
+			EntityManager manager = emf.createEntityManager();
+			EntityTransaction tran = manager.getTransaction();
+			tran.begin();
+			    manager.persist(s);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+
+}
+
+
+package com.dao;
+
+import javax.persistence.EntityManager;
+
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+
+import com.bean.userQuiztable;
+
+
+@Repository
+public class userQuiztableDao {
+	@Autowired
+	EntityManagerFactory emf;
+	public int takeQuiz(userQuiztable q) {
+		try {
+			
+			EntityManager manager = emf.createEntityManager();
+			EntityTransaction tran = manager.getTransaction();
+			tran.begin();
+			    manager.persist(q);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+
+}
+}
+
+
+//loginService
+package com.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import org.springframework.stereotype.Service;
+
+import com.bean.Login;
+import com.dao.LoginDao;
+
+
+@Service
+public class LoginService {
+@Autowired
+LoginDao loginDao;
+
+public  String storeLoginDetails(Login u) {
+	if(loginDao.storeLoginDetails(u)>0) {
+		return "Details stored successfully";
+	}else {
+		return "Details didn't store";
+	}
+
+
+    
+	
+	
+}
+
+	
+
+}
+
+
+//QuestionService
+package com.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+
+import com.bean.Questions;
+import com.dao.QuestionsDao;
+
+
+
+@Service
+public class QuestionsService {
+	@Autowired
+    QuestionsDao questionsDao;
+	
+	public  String storeQuestions(Questions q) {
+		if(questionsDao.storeQuestions(q)>0) {
+			return "Details stored successfully";
+		}else {
+			return "Details didn't store";
+		}
+}
+	public Questions findQuestionsById(int id) {
+		return questionsDao.getQuestionsDetails(id);
+	}
+
+}
+
+
+//QuizResultService
+package com.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+import com.bean.QuizResults;
+
+import com.dao.QuizResultsDao;
+
+@Service
+public class QuizResultsService {
+	@Autowired
+    QuizResultsDao quizresultsDao;
+	
+	public  String checkResults(QuizResults q) {
+		if(quizresultsDao.checkResults(q)>0) {
+			return "Results printed successfully";
+		}else {
+			return "Results didn't printed";
+		}
+
+}
+}
+
+
+package com.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+
+import org.springframework.stereotype.Service;
+
+import com.bean.students;
+
+@Service
+public class StudentsService {
+@Autowired
+
+
+    
+	
+	com.dao.studentsDao studentsDao;
+	
+	public   String storeStudents(students s) {
+		if(studentsDao.storeStudents(s)>0) {
+			return "Details stored successfully";
+		}else {
+			return "Details didn't store";
+		}
+}
+
+}
+
+
+package com.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+
+import com.bean.userQuiztable;
+
+
+@Service
+public class userQuiztableService {
+	@Autowired
+    com.dao.userQuiztableDao userQuiztableDao;
+	public  String takeQuiz(userQuiztable q) {
+		if(userQuiztableDao.takeQuiz(q)>0) {
+			return " Quiz taken successfully";
+		}else {
+			return "try again";
+		}
+	
+	
+
+}
+}
+
+
+

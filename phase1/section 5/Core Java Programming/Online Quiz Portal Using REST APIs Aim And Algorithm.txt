@@ -1,0 +1,23 @@
+git URL:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+Aim:To create an online quiz portal with multiple REST APIs where users can browse different quizzes, attempt them, and find their scores and standings.
+
+
+
+Algorithm:
+Step 1: Start the program.
+Step 2:In Spring initializer create a maven project
+Step 3:choose 2.6.11 spring Boot version
+Step 4:enter Project Metadata
+Step 5:choose java version 11
+Step 6:Add dependencies
+Step 7:Generate
+Step 8:Extract Zip file
+Step 9:Import the project in to eclipse
+Step 10:create application.properties file
+Step 11:create login for Admin
+Step 11:Using REST client store details.
+Step 12:Using REST client findQuestions using Id.
+Step 13:stop the program.
