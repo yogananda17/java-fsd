@@ -1,0 +1,23 @@
+git url link:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+Aim: Build a responsive website for a restaurant where users can read the details of the restaurant.
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:create index.html
+Step 3:Take html 5 and give title as Ming's Diner
+Step 4:In body use navbar and create nav-link
+Step 5:Add h1,p tags 
+Step 6:And make a button Order Now.
+Step 7:create style.css for presentation of web page.
+Step 8:Including colors,layout, and fonts
+Step 9:Add backgroung images to web site.
+Step 10:Run the program
+Step 11:Stop the program.
+
+
