@@ -1,0 +1,177 @@
+//index1.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <script src="ProgramManager.js"></script>
+    
+    
+</head>
+<body class="main" bgcolor="antiquewhite" align="center" >
+   
+    <h1>Main Page</h1>
+    <a href="demo1.html">ProgramManager</a> |
+    <a href="demo2.html">Finace Team</a>
+    
+</body>
+</html>
+
+
+//demo1.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="ProgramManager.js"></script>
+    <style type="text/css">
+        .main1{
+            background-color: antiquewhite;
+            color: darkcyan;
+            
+            margin-top: 8%;
+        }
+        .main1{
+        border: 4px solid black;
+        padding: 8px;
+        }
+    </style>
+    
+</head>
+
+<body class="main1" align="center">
+    <h1>Program manager</h1>
+    <h2>Add new budget</h2>
+    ClientName: <input type="text" id="ClientName"/><br/>
+    ProjectName:<input type="text" id="ProjectName"/><br/>
+    Budget:     <input type="text" id="Budget"/><br/>
+
+    <input type="button" value="Add Data" onclick="addData()"/>
+    <a href="index1.html">Back</a>
+    <div id="out">
+
+    </div>
+
+
+    
+</body>
+</html>
+
+//programManager.js
+var budgetInfo;
+function addData(){
+    var ClientNameValue =  document.getElementById("ClientName").value
+    var ProjectNameValue = document.getElementById("ProjectName").value;
+    var BudgetValue =      document.getElementById("Budget").value;
+    var obj = sessionStorage.getItem("obj");
+    let emp = {ClientName:ClientNameValue,ProjectName:ProjectNameValue,Budget:BudgetValue};
+    
+    if(obj==null){
+        budgetInfo = new Array();
+        budgetInfo.push(emp);
+        sessionStorage.setItem("obj",JSON.stringify(budgetInfo));
+    }else {
+        obj = JSON.parse(obj);
+        obj.push(emp);
+        sessionStorage.setItem("obj",JSON.stringify(obj));
+    }
+    
+    document.getElementById("ClientName").value=""
+    document.getElementById("ProjectName").value=""
+    document.getElementById("out").innerHTML="Data Stored";
+}
+
+
+//demo2.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+    .custData {
+        background-color: antiquewhite;
+        
+    }  
+    .custData td,th{
+        border: 1px solid black;
+        padding: 8px;
+    }  
+    .custData th{
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+       
+        
+    }
+    </style>
+    <script src="viewData.js"></script>
+</head>
+<body class="custData" align="center">
+    <h1>Finance Teams</h1>
+    <h2>Annual Budget</h2>
+    <table class="custData" align="center">
+        
+        <tr>
+            <th>ClientName</th>
+            <th>ProjectName</th>
+            <th>Budget</th>
+            
+        </tr>
+        <tr>
+            <td>
+                AirJet
+            </td>
+            <td>Flight Booking</td>
+            <td>$120,000</td>
+        </tr>
+        <tr>
+            <td>
+                Rsmart
+            </td>
+            <td>online shopping</td>
+            <td>$200,000</td>
+        </tr>
+        <tr>
+            <td>
+                RTC
+            </td>
+            <td>online Booking</td>
+            <td>$150,000</td>
+        </tr>
+        <tr>
+            <td>
+                Facebook
+            </td>
+            <td>Facebook mart</td>
+            <td>$300,000</td>
+        </tr>
+        <tr>
+            <td colspan="2">Total Budget</td>
+            <td>$770,000</td>
+        </tr>
+
+
+
+
+        
+
+
+         
+       
+        
+
+    
+    </table>
+
+<a href="index1.html">Back</a>
+</body>
+</html>

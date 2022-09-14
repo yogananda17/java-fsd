@@ -1,0 +1,19 @@
+git url link:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+Aim:As a developer, write a program using JavaScript to decide the budget of a specific team.
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:create index1.html
+Step 3:In body create two links programManager and Finace Team
+Step 4:If we click on programManager link it goes to demo1.html page
+Step 5:There project details will be enter.
+Step 6:create programManager.js to Add project Details
+Step 7:Create demo2.html
+Step 8:If we click on finance team it goes to demo2.html page
+Step 9:Run the program
+Step 10:Stop the program.
