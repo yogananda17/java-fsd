@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <script src="functionType.js"></script>
+   
+
+
+</head>
+<body>
+    
+</body>
+</html>
+
+
+
+
+//find largest of two number using expression style
+let findLargest1 = function(a,b){
+    if(a>b){
+        return "a is largest"
+    } else {
+        return "b is largest"
+    }
+}
+document.write("<br/> find largest number using expression style "+findLargest1(10,20));
+
+//find largest of two number using arrow style
+let findLargest2 = (a,b) =>{
+    if(a>b){
+        return "a is largest"
+    } else {
+        return "b is largest"
+    }
+}
+document.write("<br/> find largest number using arrow style "+findLargest2(10,20));
