@@ -1,0 +1,20 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+Aim:As a Full Stack Developer, you have to create a frontend for the myPortfolio application. 
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:create project with routing YES and CSS
+Step 3:create ng g c about-us
+step 4:create ng g c contact-us
+Step 5:create ng g c login
+Step 6:create ng g s signup
+Step 7:create ng g c dashboard
+Step 8:In app-routing.module.ts give path
+Step 9:Run the program using ng serve -o
+Step 10:Stop the program
