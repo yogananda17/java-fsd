@@ -1,0 +1,25 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+
+Aim:Build an Angular app where the admin can view and manage employees.
+
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:create project using command ng new Event-Management-System
+Step 3:Create a file with name Employees.json
+Step 4:Execute json-server employees.json command
+Step 5:Create ng g c employee
+Step 6:Create ng g class employee
+Step 7:Create ng g s employee
+Step 8:Create ng g c login
+Step 9:create ng g c employee-operation
+Step 10:Add path in app-routing.module.ts
+Step 11:Run the program
+Step 12:Stop the program

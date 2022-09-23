@@ -1,0 +1,385 @@
+//app.component.html
+<div align="center" style="background-color:antiquewhite">
+  <h2>Event Management System</h2>
+  <a routerLink="login">Login</a>
+  <hr/>
+  <router-outlet></router-outlet>
+</div>
+
+
+//app.module.ts
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+
+import{HttpClientModule } from '@angular/common/http';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { EmployeeComponent } from './employee/employee.component';
+import { LoginComponent } from './login/login.component';
+import { EmployeeOperationComponent } from './employee-operation/employee-operation.component';
+import { UpdateEmployeeComponent } from './update-employee/update-employee.component';
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    EmployeeComponent,
+    LoginComponent,
+    EmployeeOperationComponent,
+    UpdateEmployeeComponent
+    
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,HttpClientModule,ReactiveFormsModule,FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+//login.component.html
+<div>
+    <h2>Login Page</h2>
+    <form [formGroup]="loginRef" (ngSubmit)="checkUser()">
+        <label>EmailId</label>
+        <input type="email" formControlName="email"/><br/>
+        <label>Password</label>
+        <input type="password" formControlName="pass"/><br/>
+        <input type="submit" value="submit"/>
+        <input type="reset" value="reset"/>
+    </form>
+    <br/>
+    <span style="color:red">{{msg}}</span>
+    </div>
+
+//login.component.ts
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+  msg:string =""
+loginRef=new FormGroup({
+email:new FormControl(),
+pass:new FormControl()
+});
+  constructor(public router:Router) { }
+
+  ngOnInit(): void {
+  }
+  checkUser(){
+    let login = this.loginRef.value;
+    if(login.email == "raj@gmail.com" && login.pass=="123"){
+          this.router.navigate(["employee"]);
+       }else {
+          this.msg = "Failure try once again";
+       }
+  
+  
+
+}
+}
+
+
+//employee.component.html
+<div class="container">
+    <form [formGroup]="employeeRef" (ngSubmit)="storeEmployee()">
+    <input type="number" placeholder="Enter Employee Id" formControlName="id"/>
+    <input type="text" placeholder="Enter first_name" formControlName="first_name"/>
+    <input type="text" placeholder="Enter last_name" formControlName="last_name"/>
+    <input type="email" placeholder="Enter email" formControlName="email"/>
+    <input type="submit" value="Add Employee" class="btn btn-success"/>
+    </form>
+    <table border="1" class="table">
+        <tr>
+            <th>Id</th>
+            <th>First_Name</th>
+            <th>Last_Name</th>
+            <th>Email</th>
+            <th>View Details</th>
+            <th>Update Details</th>
+        </tr>
+        <tr *ngFor="let employee of employees">
+                <td>{{employee.id}}</td>
+                <td>{{employee.first_name}}</td>
+                <td>{{employee.last_name}}</td>
+                <td>{{employee.email}}</td>
+                <td><input type="button" value="View Details" (click)="viewDetails(employee)" class="btn btn-primary"></td>
+                <td><input type="button" value="Update Details" (click)="UpdateDetails()" class="btn btn-primary"></td>
+                
+        </tr>
+    </table>
+    
+</div>
+
+
+//employee.component.ts
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Employee } from '../employee';
+import { EmployeeService } from '../employee.service';
+
+@Component({
+  selector: 'app-employee',
+  templateUrl: './employee.component.html',
+  styleUrls: ['./employee.component.css']
+})
+export class EmployeeComponent implements OnInit {
+  employeeRef= new FormGroup({
+    id:new FormControl(),
+    first_name:new FormControl(),
+    last_name:new FormControl(),
+    email:new FormControl()
+  });
+  employees:Array<Employee>=[]
+  constructor(public es:EmployeeService,public router:Router) { }
+
+  ngOnInit(): void {
+    this.loadEmployeeDetails();    
+  }
+  loadEmployeeDetails() {
+    
+    this.es.loadEmployeeData().subscribe({
+      next:(data:any)=>this.employees=data,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("Completed")
+    })
+
+  }
+  storeEmployee(){
+    let employee = this.employeeRef.value;
+    this.es.storeEmployeeData(employee).subscribe({
+      next:(data:any)=>console.log(data),
+      error:(error:any)=>console.log(error),
+      complete:()=>this.loadEmployeeDetails()
+    })
+    this.employeeRef.reset();
+
+}
+viewDetails(employee:any){
+  sessionStorage.setItem("employeeInfo",JSON.stringify(employee));
+  this.router.navigate(["employee-operation"]);
+}
+//UpdateDetails(employee:any){
+//  sessionStorage.setItem("employeeInfo",JSON.stringify(employee));
+ // this.router.navigate(["update-employee"]);
+//}
+
+UpdateDetails(){
+  this.router.navigate(["update-employee"]);
+}
+
+
+
+}
+
+
+//employee-opertaion.component.html
+<div>
+    <h2>Employee Details</h2>
+    <p>Id:{{employee.id}}</p>
+    <p>First_Name: {{employee.first_name}}</p>
+    <p>Last_Name: {{employee.last_name}}</p>
+    <p>Email: {{employee.email}}</p>
+
+    <input type="button" value="View All Employee" (click)="ViewAll()"/>
+    <input type="button" value="Delete Employee" (click)="deleteEmployee(employee.id)"/>
+   
+</div>
+
+//employee-operation.component.ts
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { EmployeeService } from '../employee.service';
+
+@Component({
+  selector: 'app-employee-operation',
+  templateUrl: './employee-operation.component.html',
+  styleUrls: ['./employee-operation.component.css']
+})
+export class EmployeeOperationComponent implements OnInit {
+  employee:any;
+  constructor(public router:Router,public es:EmployeeService) { }
+
+  ngOnInit(): void {
+    let obj = sessionStorage.getItem("employeeInfo");
+    if(obj != null){
+        this.employee= JSON.parse(obj);
+    }
+  }
+  ViewAll(){
+    this.router.navigate(["employee"]);
+  
+
+}
+deleteEmployee(id:any){
+  this.es.delete(id).subscribe({
+    next:(result:any)=>console.log(result),
+    error:(error:any)=>console.log(error),
+    complete:()=>console.log("completed")
+  })
+  }
+}
+
+//employee.ts
+export class Employee {
+    constructor(public id:number,public first_name:string,
+        public last_name:string, public email:string){}
+        
+
+}
+
+
+//employee.service.ts
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Employee } from './employee';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmployeeService {
+  
+  
+
+  constructor(public http:HttpClient) { }
+
+  loadEmployeeData():Observable<Employee[]>{
+    return this.http.get<Employee[]>("http://localhost:3000/employees");
+  }
+
+  storeEmployeeData(employee:any):Observable<Employee>{
+    return this.http.post<Employee>("http://localhost:3000/employees",employee);
+  }
+
+  findEmployeeById(id:any):Observable<Employee>{
+    return this.http.get<Employee>("http://localhost:3000/employees/"+id);
+  }
+
+  delete(id:any):Observable<any>{
+    return this.http.delete<any>("http://localhost:3000/employees/"+id);
+  }
+  
+
+  updateEmployeeData(employee:any):Observable<Employee>{
+    return this.http.put<Employee>("http://localhost:3000/employees",employee);
+  }
+
+
+
+}
+
+
+//update-employee.component.html
+<div>
+    <h2>Update Employee Details</h2>
+     <form [formGroup]="employeeRef"  (ngSubmit)="updateEmployee()">
+        <input type="number" placeholder="Enter Employee Id" formControlName="id"/>
+        <input type="text" placeholder="Enter first_name" formControlName="first_name"/>
+        <input type="text" placeholder="Enter last_name" formControlName="last_name"/>
+        <input type="email" placeholder="Enter email" formControlName="email"/>
+        <input type="submit" value="Update Employee" class="btn btn-success"/>
+        <br/>
+        <input type="button" value="View All Employee" (click)="ViewAll()"/>
+        </form>
+</div>
+
+//update-employee.component.ts
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Employee } from '../employee';
+import { EmployeeService } from '../employee.service';
+
+
+@Component({
+  selector: 'app-update-employee',
+  templateUrl: './update-employee.component.html',
+  styleUrls: ['./update-employee.component.css']
+})
+export class UpdateEmployeeComponent implements OnInit {
+  employeeRef= new FormGroup({
+    id:new FormControl(),
+    first_name:new FormControl(),
+    last_name:new FormControl(),
+    email:new FormControl()
+  });
+  
+  
+  employees:Array<Employee>=[]
+  
+  constructor(public es:EmployeeService,public router:Router) { }
+
+  ngOnInit(): void {
+    this.loadEmployeeDetails();    
+  }
+  loadEmployeeDetails() {
+    
+    this.es.loadEmployeeData().subscribe({
+      next:(data:any)=>this.employees=data,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("Completed")
+    })
+    
+  }
+  ViewAll(){
+    
+    this.router.navigate(["employee"])
+  
+  }
+  updateEmployee(){
+
+      let Employee = this.employeeRef.value;
+      this.es.updateEmployeeData(Employee).subscribe({
+      next:(result:any)=>console.log(result),
+      error:(error:any)=>console.log(error),
+      complete:()=>this.loadEmployeeDetails()
+      
+    })
+    this.employeeRef.reset();
+    
+    
+  }
+  
+}
+  
+
+
+
+//app-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { EmployeeOperationComponent } from './employee-operation/employee-operation.component';
+import { EmployeeComponent } from './employee/employee.component';
+import { LoginComponent } from './login/login.component';
+import { UpdateEmployeeComponent } from './update-employee/update-employee.component';
+
+const routes: Routes = [
+  {path:"login",component:LoginComponent},
+  {path:"employee",component:EmployeeComponent},
+  {path:"employee-operation",component:EmployeeOperationComponent},
+  {path:"update-employee",component:UpdateEmployeeComponent}
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+
+
+  
+
+
