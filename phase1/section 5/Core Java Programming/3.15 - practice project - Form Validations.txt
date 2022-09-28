@@ -1,0 +1,218 @@
+//login-service.ts
+import { Injectable } from "@angular/core"
+
+
+@Injectable()
+export class LoginService{
+    checkUserDetails(login:any):string {
+        if(login.email=="eren@gmail.com" && login.pass =="123"){
+            return "successfully login";
+        } else {
+            return "failure try once again";
+        }
+    }
+
+}
+
+
+
+//mdf-login-page.component.html
+<div>
+    <h2>Login page using Model Driven Form</h2>
+    <form [formGroup]="loginRef" (ngSubmit)="checkUser()">
+        <label>EmailId</label>
+        <input type="email" name="email" formControlName="email"/>
+        <div *ngIf="loginRef.controls['email']?.invalid && (loginRef.controls['email']?.touched)">
+            <span style="color:burlywood">UserName is required</span>
+        
+        </div>
+        
+        <br/>
+        <label>Password</label>
+        <input type="password" name="pass" formControlName="pass"/>
+        <div *ngIf="loginRef.controls['pass']?.invalid && (loginRef.controls['pass']?.touched)">
+            <span style="color:blanchedalmond">Password is required</span>
+            
+        </div>
+        
+        <br/>
+        <input type="submit" value="submit" [disabled]="loginRef.invalid"/>
+        <input type="reset" value="reset"/>
+        <span style="color:green">{{msg}}</span>
+    </form>
+</div>
+
+
+
+//mdf-login-page.components.ts
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CustomService } from '../tdf-login-page/custom.service';
+import { LoginService } from './login-service';
+@Component({
+  selector: 'app-mdf-login-page',
+  templateUrl: './mdf-login-page.component.html',
+  styleUrls: ['./mdf-login-page.component.css']
+})
+export class MdfLoginPageComponent implements OnInit {
+  loginRef = new FormGroup({
+    email:new FormControl("",[Validators.required]),
+    pass:new FormControl("",[Validators.required])
+  });
+
+  msg:string=""
+
+  constructor(public ls:LoginService) { }  //DI for service class
+
+  ngOnInit(): void {
+  }
+  checkUser(){
+    let login = this.loginRef.value;
+   // console.log(login);
+  // if(login.email=="eren@gmail.com" && login.pass=="123"){
+   // this.msg = "Successfully login"
+//}else {
+ //   this.msg = "Failure try once again";
+//}
+//let cs = new CustomService();
+//this.msg = cs.checkUserDetails(login);
+
+this.msg = this.ls.checkUserDetails(login);
+
+
+    this.loginRef.reset();
+
+  }
+}
+
+
+
+//custom.service.ts
+export class CustomService {
+
+    checkUserDetails(login:any):string {
+        if(login.email=="eren@gmail.com" && login.pass =="123"){
+            return "successfully login";
+        } else {
+            return "failure try once again";
+        }
+    }
+}
+
+
+
+//tdf-login-page.component.html
+<div>
+    <h2>Login page using Template Driven form</h2>
+    <form #loginRef ="ngForm" (ngSubmit)="checkUser(loginRef)">
+        <label>EmailId</label>
+        <input type="email" name="email" ngModel required minlength="7" pattern="[a-z,0-9]+@[a-z,0-9]+.com" />
+        <div *ngIf="loginRef.controls['email']?.invalid && (loginRef.controls['email']?.touched)">
+            <span style="color:burlywood">UserName is required</span>
+            <span [hidden]="!loginRef.controls['email'].hasError('required')" style="color: red">EMail is required</span>
+            <span [hidden]="!loginRef.controls['email'].hasError('minlength')" style="color: red">EMail id must be 7 characters</span>
+            <span [hidden]="!loginRef.controls['email'].hasError('pattern')" style="color: red">it must follow pattern</span>
+        </div>
+        <br/>
+        <label>Password</label>
+        <input type="password" name="pass" ngModel required/>
+        <div *ngIf="loginRef.controls['pass']?.invalid && (loginRef.controls['pass']?.touched)">
+            <span style="color:blanchedalmond">Password is required</span>
+            
+        </div>
+        
+        <br/>
+        <input type="submit" value="submit" [disabled]="loginRef.invalid"/>
+        <input type="reset" value="reset"/>
+        <br/>
+        <span style="color:green">{{msg}}</span>
+        {{loginRef.invalid}}
+    </form>
+</div>
+
+
+
+//tdf-login-page.component.ts
+import { Component, OnInit } from '@angular/core';
+import { LoginService } from '../mdf-login-page/login-service';
+import { CustomService } from './custom.service';
+@Component({
+  selector: 'app-tdf-login-page',
+  templateUrl: './tdf-login-page.component.html',
+  styleUrls: ['./tdf-login-page.component.css']
+})
+export class TdfLoginPageComponent implements OnInit {
+  msg:string=""
+  constructor(public ls:LoginService) { }
+
+  ngOnInit(): void {
+  }
+
+  checkUser(loginRef:any){
+    //console.log(loginRef)
+    let login = loginRef.value;
+    //console.log(login);
+   // if(login.email=="raj@gmail.com" && login.pass=="123"){
+   //   this.msg = "Failure try once again"
+  //}else {
+   //   this.msg = "successfully login";
+ // }
+ let cs = new CustomService();
+ this.msg = cs.checkUserDetails(login);
+
+  loginRef.reset();
+}
+}
+    
+
+//app.component.html
+<div>
+  <h2>Angular Forms</h2>
+  <hr/>
+  <app-tdf-login-page></app-tdf-login-page>
+  <hr/>
+  <app-mdf-login-page></app-mdf-login-page>
+</div>
+
+
+//app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'angular-forms';
+}
+
+
+//app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+import { TdfLoginPageComponent } from './tdf-login-page/tdf-login-page.component';
+import { MdfLoginPageComponent } from './mdf-login-page/mdf-login-page.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LoginService } from './mdf-login-page/login-service';
+@NgModule({
+  declarations: [
+    AppComponent,
+    TdfLoginPageComponent,
+    MdfLoginPageComponent
+  ],
+  imports: [
+    BrowserModule,FormsModule,ReactiveFormsModule
+  ],
+  providers: [LoginService],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+
+
+
+

@@ -1,0 +1,51 @@
+//app.component.html
+<div>
+  <h1>Welcome to Angular Application</h1>
+  <p>We are learnng angular framework</p>
+  <p>My name {{name}}, Id is {{id}}, Age is {{age}} result {{result}}</p>
+  <my-child-tag></my-child-tag>
+  <my-child-tag></my-child-tag>
+  <my-child-tag></my-child-tag>
+</div>
+
+
+//app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',         // <app-root></app-root>
+  templateUrl: './app.component.html',      // connect to html page 
+  styleUrls: ['./app.component.css']      // connect to html page 
+})
+export class AppComponent {
+  id:number =100;
+  name:string = "Raj Deep";
+  age:number =21;
+  result: boolean = true;
+  title: any;
+}
+
+
+//child.component.css
+p{
+    color: greenyellow;
+}
+
+
+//child.component.html
+<div>
+    <p>{{msg}}</p>
+</div>
+
+
+//child.component.ts
+import { Component } from "@angular/core";
+
+@Component({
+    selector:"my-child-tag",
+    templateUrl:"./child.component.html",
+    styleUrls:["./child.component.css"]
+})
+export class Child {
+    msg:string ="This is child component";
+}

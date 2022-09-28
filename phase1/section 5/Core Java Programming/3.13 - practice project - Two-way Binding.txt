@@ -1,0 +1,81 @@
+//two-way-binding.component.html
+<div>
+    <h2>Two Way data binding using ngModel</h2>
+    age:<input type="number" [(ngModel)]="age"/><br/>
+    {{age}}
+    <br/>
+    Salary:<input type="number" [value]="salary"/><br/>
+    {{salary}}
+</div>
+
+
+
+//two-way-binding.component.ts
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-two-way-binding',
+  templateUrl: './two-way-binding.component.html',
+  styleUrls: ['./two-way-binding.component.css']
+})
+export class TwoWayBindingComponent implements OnInit {
+  age:number=22;
+  salary:number=52000;
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+
+
+//app.component.html
+<div>
+  <app-header></app-header>
+  <h2>Angular Data Binding</h2>
+  <app-two-way-binding></app-two-way-binding>
+</div>
+
+
+//app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'angular-data-binding';
+}
+
+
+//app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
+import { StringInterpolationComponent } from './string-interpolation/string-interpolation.component';
+import { PropertyBindingComponent } from './property-blinding/property-blinding.component';
+import { EventBindingComponent } from './event-binding/event-binding.component';
+import { TwoWayBindingComponent } from './two-way-binding/two-way-binding.component';
+import { FormsModule } from '@angular/forms';
+@NgModule({
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    StringInterpolationComponent,
+    PropertyBindingComponent,
+    EventBindingComponent,
+    TwoWayBindingComponent
+  ],
+  imports: [
+    BrowserModule,FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+

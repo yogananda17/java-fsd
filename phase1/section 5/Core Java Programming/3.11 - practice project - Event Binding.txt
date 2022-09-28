@@ -1,0 +1,80 @@
+//event-binding.component.html
+<div>
+    <h2>One Way data binding - using event binding</h2>
+    <input type="button" value="click here" (click)="fun()"/>
+    <br/>
+    {{msg}} or <span [innerText]="msg"></span>
+    <br/>
+    Name :<input type="text" #nameRef/>
+    <br/>
+    <input type="button" value="click here" (click)="passValue(nameRef)"/>
+    <br/>
+    1st Number:<input type="number" #n1/><br/>
+    2nd Number:<input type="number" #n2/><br/>
+    <input type="button" value="Add" (click)="add(n1,n2)"/>
+    <br/>
+    {{result}}
+</div>
+
+
+
+//event-binding.component.ts
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-event-binding',
+  templateUrl: './event-binding.component.html',
+  styleUrls: ['./event-binding.component.css']
+})
+export class EventBindingComponent implements OnInit {
+  msg:String="Hi";
+  result: string="";
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+  fun(){
+    //alert("Event generated...")
+    this.msg="Hello"
+  }
+
+  passValue(nameRef:any){
+    alert(nameRef.value);
+  }
+  add(n1:any,n2:any){
+    let sum = eval(n1.value) +eval(n2.value);
+    //alert(sum);
+    n1.value="";
+    n2.value="";
+    this.result="sum of two numbers "+sum;
+
+
+  }
+
+}
+
+
+
+//app.component.html
+<div>
+  <app-header></app-header>
+  <h2>Angular Data Binding</h2>
+ 
+  
+  <app-event-binding></app-event-binding>
+  
+</div>
+
+
+
+//app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'angular-data-binding';
+}

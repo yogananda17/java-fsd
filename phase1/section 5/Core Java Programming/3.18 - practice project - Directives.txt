@@ -1,0 +1,238 @@
+//attribute-directive.component.html
+<div>
+    <h2>Attribute Directive ie ngstyle and ngClass</h2>
+    <p style="color:blue">Apply css effect using style Attribute</p>
+    <p [ngStyle]="{'color':'red'}">Apply css effect using ngstyle Attribute</p>
+    <p [ngStyle]="styleVariable">Apply css effect using ngstyle Attribute</p>
+    <p class="firstClass">class using css</p>
+    <p [ngClass]="{firstClass:true}">class using ngClass style</p>
+    <p [ngClass]="{firstClass:false}">class using ngClass style</p>
+    <p [ngClass]="{firstClass:false,secondClass:true}">class using ngClass style</p>
+    <p [ngClass]="{firstClass:f1,secondClass:f2}">class using ngClass style</p>
+    <div [ngClass]="{firstClass:f1,secondClass:f2}" (mousemove)="ff1()" (mouseout)="ff2()">
+            Hi....
+    </div>
+</div>
+
+
+//attribute-directive.component.ts
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-attribute-directive',
+  templateUrl: './attribute-directive.component.html',
+  styleUrls: ['./attribute-directive.component.css']
+})
+export class AttributeDirectiveComponent implements OnInit {
+  styleVariable={'color':'green'}
+  f1:boolean=true;
+  f2:boolean=false;
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  ff1() {
+    this.f1= false;
+    this.f2 = true;
+  }
+  ff2() {
+    this.f2 = false;
+    this.f1 = true;
+  }
+
+ 
+
+}
+
+
+//structure-directive.component.html
+<div>
+    <h2>structure Directive</h2>
+    <div>This is div tag</div>
+    <div *ngIf="true">This is div tag with true value</div>
+    <div *ngIf="false">This is div tag with false value</div>
+    <div *ngIf="f1">this is div tag with f1 boolean value</div>
+    <div *ngIf="f2">this is div tag with f2 boolean value</div>
+    <input type="button" value="Display Content" (click)="changeValue()"/>
+    <br/>
+    <div *ngIf="f3">
+        <h2>Welcome to Angular Training</h2>
+        <p>Today we are learning types of Directive</p>
+    </div>
+    <input type="button" [value]="b1" (click)="toggle()"/>
+    <div *ngIf="f4">
+        Hell0.................
+    </div>
+    <hr/>
+    <h4>*ngFor</h4>
+    <div>{{num1}}</div>
+    <h4>Display the number one by one</h4>
+    <div *ngFor="let n of num1">{{n}}</div>
+    <h4>All names are</h4>
+    <ul>
+        <li *ngFor="let name of names">{{name}}</li>
+    </ul>
+    <hr/>
+    <input type="number" #idRef placeholder="Enter Id"/>
+    <input type="text" #nameRef placeholder="Enter Nane"/>
+    <input type="number" #salaryRef placeholder="Enter Salary"/>
+    <input type="button" value="Add Employee" (click)="addEmployeeDetails(idRef,nameRef,salaryRef)"/>
+
+    <h3>Employee details</h3>
+    <table border="1">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Salary</th>
+        </tr>
+        <tr *ngFor="let employee of employees">
+            <td>{{employee.id}}</td>
+            <td>{{employee.name}}</td>
+            <td>{{employee.salary}}</td>
+        </tr>
+    </table>
+</div>
+
+
+
+//structure-directive.component.ts
+import { Component, OnInit } from '@angular/core';
+import { Employee } from '../employee';
+@Component({
+  selector: 'app-structure-directive',
+  templateUrl: './structure-directive.component.html',
+  styleUrls: ['./structure-directive.component.css']
+})
+export class StructureDirectiveComponent implements OnInit {
+  f1:boolean=false;
+  f2:boolean=true;
+  f3:boolean=false;
+  b1:string="show";
+  f4:boolean=false;
+
+  num1:number[]=[30,10,20,45,56];
+  names:string[]=["eren","armin","lee","erwin"];
+
+
+  employees:Array<Employee>=[];   //array object
+
+
+  constructor() { }
+
+  ngOnInit(): void {
+    //class style model
+   // let emp1 = new Employee(100,"eren",15000);
+   // let emp2 = new Employee(101,"hina",18000);
+   // let emp3 = new Employee(102,"hodaka",16000);
+   // this.employees.push(emp1);
+   // this.employees.push(emp2);
+  //  this.employees.push(emp3);
+
+
+  //interface style model
+  let emp1:Employee ={id:101,name:"eren",salary:15000}
+    let emp2 :Employee ={id:102,name:"hina",salary:16000}
+    let emp3 :Employee ={id:101,name:"hodaka",salary:18000}
+    this.employees.push(emp1);
+    this.employees.push(emp2);
+    this.employees.push(emp3);
+
+
+    
+
+  }
+
+  addEmployeeDetails(idRef:any,nameRef:any,salaryRef:any){
+    let idValue = idRef.value;
+    let nameValue = nameRef.value;
+    let salaryValue = salaryRef.value;
+      
+      let emp:Employee={id:idValue,name:nameValue,salary:salaryValue};
+    
+    this.employees.push(emp);
+    idRef.value="";
+    nameRef.value="";
+    salaryRef.value="";
+  }
+  changeValue(){
+    this.f3=true;
+  }
+  toggle(){
+    if(this.f4){
+      this.f4=false;
+      this.b1="show";
+    } else {
+      this.f4=true;
+      this.b1="hide"
+
+    }
+  }
+
+}
+
+
+//app.component.html
+<div>
+  <h2>Types of directives</h2>
+  <app-structure-directive></app-structure-directive>
+  <hr/>
+  <!--<app-attribute-directive></app-attribute-directive>-->
+</div>
+
+
+//app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'types-of-directives';
+}
+
+
+
+//app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+import { StructureDirectiveComponent } from './structure-directive/structure-directive.component';
+import { AttributeDirectiveComponent } from './attribute-directive/attribute-directive.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    StructureDirectiveComponent,
+    AttributeDirectiveComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+//employee.spec.ts
+import { Employee } from './employee';
+
+describe('Employee', () => {
+  it('should create an instance', () => {
+    expect(new Employee()).toBeTruthy();
+  });
+});
+
+
+
+//employee.ts
+export interface Employee{
+    id:number;
+    name:string;
+    salary:number;
+}
+

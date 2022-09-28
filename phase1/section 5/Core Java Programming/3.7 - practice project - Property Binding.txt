@@ -1,0 +1,62 @@
+//property - binding.component.html
+<div>
+    <h2>One way data binding using Property binding</h2>
+    <input type="text"/><br/>
+    <input type="text" value="Raj"/><br/>
+    <input type="text" value="lname"/><br/>
+    <input type="text" [value]="lname"/><br/>
+    <p innerText="lname"></p>
+    <p [innerText]="lname"></p>
+    <div [innerText]="lname"></div>
+    {{lname}} <span [innerText]="lname"></span><br/>
+    <input type="button" value="Click here"/><br/>
+    <input type="button" value="Click here" disabled/><br/>
+    <input type="button" value="Click here" disabled="lname"/><br/>
+    <input type="button" value="string interpolation" disabled={{f1}}/><br/>
+    <input type="button" value="Property binding" [disabled]="f1"/>
+</div>
+
+
+//property-binding.component.ts
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-property-binding',
+  templateUrl: './property-blinding.component.html',
+  styleUrls: ['./property-blinding.component.css']
+})
+export class PropertyBindingComponent implements OnInit {
+
+  lname:string ="Deep";
+  f1:boolean = false;
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+
+//app.component.html
+<div>
+  <app-header></app-header>
+  <h2>Angular Data Binding</h2>
+ 
+  
+  <app-property-binding></app-property-binding>
+  
+</div>
+
+
+
+//app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'angular-data-binding';
+}

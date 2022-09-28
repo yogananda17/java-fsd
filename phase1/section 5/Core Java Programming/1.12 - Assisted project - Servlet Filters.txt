@@ -1,0 +1,221 @@
+//AccountDashboard.java
+package com;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class AccountDashboard
+ */
+@WebServlet("/AccountDashboard")
+public class AccountDashboard extends HttpServlet {
+        private static final long serialVersionUID = 1L;
+       
+    /**
+* @see HttpServlet#HttpServlet()
+*/
+    public AccountDashboard() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+        /**
+         * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+         */
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                // TODO Auto-generated method stub
+        
+                response.getWriter().write("I am in Account Dashboard after passing through LoginFilter");
+        }
+
+        /**
+         * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+         */
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                // TODO Auto-generated method stub
+                doGet(request, response);
+        }
+
+}
+
+
+//AccountProfile.java
+package com;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+* Servlet implementation class AccountProfile
+*/
+@WebServlet("/AccountProfile")
+public class AccountProfile extends HttpServlet {
+        private static final long serialVersionUID = 1L;
+       
+    /**
+* @see HttpServlet#HttpServlet()
+*/
+    public AccountProfile() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+        /**
+         * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+         */
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                // TODO Auto-generated method stub
+                response.getWriter().write("I am in Account Profile after passing through LoginFilter");
+        }
+
+        /**
+         * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+         */
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                // TODO Auto-generated method stub
+                doGet(request, response);
+        }
+
+}
+
+
+//InfoPage.java
+package com;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class InfoPage
+ */
+@WebServlet("/InfoPage")
+public class InfoPage extends HttpServlet {
+        private static final long serialVersionUID = 1L;
+       
+    /**
+* @see HttpServlet#HttpServlet()
+*/
+    public InfoPage() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+        /**
+         * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+         */
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                // TODO Auto-generated method stub
+                response.getWriter().write("I am in InfoPage");
+        }
+
+        /**
+         * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+         */
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                // TODO Auto-generated method stub
+                doGet(request, response);
+        }
+
+}
+
+
+//LoginFilter.java
+package com;
+
+import java.io.IOException;
+import java.nio.file.DirectoryStream.Filter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class LoginFilter
+ */
+@WebFilter("/LoginFilter")
+public abstract class LoginFilter implements Filter {
+
+    /**
+* Default constructor.
+*/
+    public LoginFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+        /**
+         * @see Filter#destroy()
+         */
+        public void destroy() {
+                // TODO Auto-generated method stub
+        }
+
+        /**
+         * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+         */
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+                // TODO Auto-generated method stub
+                // place your code here
+                
+                String userId = request.getParameter("userid");
+
+                if( userId != null){
+                        chain.doFilter(request, response);
+            }
+                 
+                
+        }
+
+        /**
+         * @see Filter#init(FilterConfig)
+         */
+        public void init(FilterConfig fConfig) throws ServletException {
+                // TODO Auto-generated method stub
+        }
+
+}
+
+
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Filter Demo</title>
+</head>
+<body>
+        <a href="dashboard?userid=johndoe">Account Dashboard (allow filter)</a><br>
+        <a href="profile?userid=johndoe">Account Profile (allow filter)</a><br>
+        <a href="dashboard">Account Dashboard (block filter)</a><br>
+        <a href="info">Info Page </a><br>
+</body>
+</html>
+

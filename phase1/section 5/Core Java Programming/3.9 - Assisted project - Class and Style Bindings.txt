@@ -1,0 +1,17 @@
+//app.component.html
+<h1 [class]="a" [style.color]="'green'" [style.text-align]="'center'">Welcome to Angular framework</h1>
+  Upper Heading's class is : "{{ g[0].className }}"
+
+
+//app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  a="Welcome";
+  g = document.getElementsByClassName(this.a);
+}
