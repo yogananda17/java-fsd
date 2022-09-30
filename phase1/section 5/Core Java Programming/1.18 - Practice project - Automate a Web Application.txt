@@ -1,0 +1,222 @@
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Login Page</h2>
+<form action="LoginController" method="get">
+	<label>EmailId</label>
+	<input type="email" name="emailid" id="n1"><br/>
+	<label>Password</label>
+	<input type="password" name="password" id="n2"><br/>
+	<input type="submit" value="submit" id="n3"/>
+	<input type="reset" value="reset"/>
+</form>
+<br/>
+<a href="Registration.html">Registration</a>
+</body>
+</html>
+
+
+//Registration.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Do Registration</h2>
+<form action="LoginController" method="post">
+	<label>EmailId</label>
+	<input type="email" name="emailid" id="n1"><br/>
+	<label>Password</label>
+	<input type="password" name="password" id="n2"><br/>
+	<input type="submit" value="submit" id="n3"/>
+	<input type="reset" value="reset"/>
+</form>
+<a href="index.html">Login Page</a>
+</body>
+</html>
+
+
+//Home.html
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class Home
+ */
+public class Home extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Home() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		PrintWriter pw  = response.getWriter();
+		HttpSession hs = request.getSession(true);
+		//String emailid = (String)request.getAttribute("obj");
+		String emailid = (String)hs.getAttribute("obj");
+		pw.println("Welcome to Home Page"  +emailid);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+
+//LoginController.java
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class Home
+ */
+public class Home extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Home() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		PrintWriter pw  = response.getWriter();
+		HttpSession hs = request.getSession(true);
+		//String emailid = (String)request.getAttribute("obj");
+		String emailid = (String)hs.getAttribute("obj");
+		pw.println("Welcome to Home Page"  +emailid);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+//registration.java
+package com;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class registration {
+
+	public static void main(String[] args) {
+		 System.setProperty("webdriver.chrome.driver", "C:\\phase 5 WorkPhase\\chromedriver_win32\\chromedriver.exe");
+			
+			WebDriver wd = new ChromeDriver();
+			wd.get("http://localhost:8080/project__1/Registration.html");
+			WebElement emailIdRef = wd.findElement(By.id("n1"));
+			WebElement passwordRef = wd.findElement(By.id("n2"));
+			emailIdRef.sendKeys("light@gmail.com");
+			passwordRef.sendKeys("654");
+			WebElement submitButtonRef = wd.findElement(By.id("n3"));
+			submitButtonRef.click();
+			
+
+	}
+
+}
+
+
+//Login.java
+package com;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class Login {
+
+	public static void main(String[] args) {
+		 System.setProperty("webdriver.chrome.driver", "C:\\phase 5 WorkPhase\\chromedriver_win32\\chromedriver.exe");
+			
+			WebDriver wd = new ChromeDriver();
+			wd.get("http://localhost:8080/project__1/index.html");
+			WebElement emailIdRef1 = wd.findElement(By.id("n1"));
+			WebElement passwordRef1 = wd.findElement(By.id("n2"));
+			emailIdRef1.sendKeys("raj@gmail.com");
+			passwordRef1.sendKeys("123");
+			WebElement submitButtonRef1 = wd.findElement(By.id("n3"));
+			submitButtonRef1.click();
+
+	}
+
+}
+
+
+
+//pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>MyProjects</groupId>
+  <artifactId>Selenium</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+  <dependencies>
+  <dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.2.1</version>
+</dependency>
+  </dependencies>
+</project>

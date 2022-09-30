@@ -1,0 +1,20 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+
+Aim:As a Full Stack Developer, you have to build an automation script that automated the basic functionalities like registration and login. 
+
+
+
+
+Algorithm:
+Step 1:Start the project
+Step 2:Create index.html and registration.html
+Step 3:create servlet 
+Step 4:Create login.java class
+Step 5:Create registration.java class
+Step 6:Add dependencies in pom.xml file
+Step 7:run the program
+Step 8:Stop the program.
