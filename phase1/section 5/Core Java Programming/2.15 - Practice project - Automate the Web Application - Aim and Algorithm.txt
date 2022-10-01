@@ -1,0 +1,22 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+Aim:Use the website link given to you and automate different functionalities for the same. Create a new project and include all the dependencies in the class path. Create a Java class that will contain your automation and test scripts. Run the project using TestNG.
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:Create index.html and registartion.html
+Step 3:Create servelt
+Step 4:Create another project
+Step 5:Create TestNG
+Step 6:Create registeationTest
+Step 8:Create LoginTest
+Step 9:Create amazoneTestPage
+Step 10:Automate With different functionalities.
+Step 11:run the program
+Step 12:Stop the program.

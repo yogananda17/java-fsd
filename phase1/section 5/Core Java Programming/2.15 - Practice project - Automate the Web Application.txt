@@ -1,0 +1,273 @@
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Login Page</h2>
+<form action="LoginController" method="get">
+	<label>EmailId</label>
+	<input type="email" name="emailid" id="n1"><br/>
+	<label>Password</label>
+	<input type="password" name="password" id="n2"><br/>
+	<input type="submit" value="submit" id="n3"/>
+	<input type="reset" value="reset"/>
+</form>
+<br/>
+<a href="Registration.html">Registration</a>
+</body>
+</html>
+
+
+//Registration.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Do Registration</h2>
+<form action="LoginController" method="post">
+	<label>EmailId</label>
+	<input type="email" name="emailid" id="n1"><br/>
+	<label>Password</label>
+	<input type="password" name="password" id="n2"><br/>
+	<input type="submit" value="submit" id="n3"/>
+	<input type="reset" value="reset"/>
+</form>
+<a href="index.html">Login Page</a>
+</body>
+</html>
+
+
+
+//Home.java
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class Home
+ */
+public class Home extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Home() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		PrintWriter pw  = response.getWriter();
+		HttpSession hs = request.getSession(true);
+		//String emailid = (String)request.getAttribute("obj");
+		String emailid = (String)hs.getAttribute("obj");
+		pw.println("Welcome to Home Page"  +emailid);
+		response.sendRedirect("https://www.amazon.in");
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+
+//Logincontroller.java
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class LoginController
+ */
+//@WebServlet
+public class LoginController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public LoginController() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter pw = response.getWriter();
+		response.setContentType("text/html");
+							
+		String emailid = request.getParameter("emailid");
+		String password = request.getParameter("password");
+		RequestDispatcher rd1 = request.getRequestDispatcher("Home");
+		RequestDispatcher rd2 = request.getRequestDispatcher("index.html");
+		HttpSession hs = request.getSession();
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/javatraining", "root", "root@123");
+			PreparedStatement pstmt = con.prepareStatement("select * from login where emailid=? and password = ?");
+			pstmt.setString(1, emailid);
+			pstmt.setString(2, password);
+			ResultSet rs  = pstmt.executeQuery();
+			if(rs.next()) {
+				pw.println("successfully login");
+				//request.setAttribute("obj", emailid);				// we store emailid in request scope.
+				hs.setAttribute("obj", emailid);
+				//rd1.forward(request, response);          // we can see only output of target page 
+				//hs.invalidate();
+				response.sendRedirect("Home");
+			}else {
+				pw.println("failure try once again");
+				rd2.include(request, response);    
+			}	
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter pw = response.getWriter();
+		response.setContentType("text/html");			//output consider as html not a text      
+		String emailid = request.getParameter("emailid");
+		String password = request.getParameter("password");	
+		RequestDispatcher rd1 = request.getRequestDispatcher("index.html");
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/javatraining", "root", "root@123");
+			PreparedStatement pstmt = con.prepareStatement("insert into login values(?,?)");
+			pstmt.setString(1, emailid);
+			pstmt.setString(2, password);
+			int res	= pstmt.executeUpdate();
+			if(res>0) {
+				pw.println("Account Created successfully");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			pw.println("Account didn't create, Email Id must be unique");
+		}
+
+		rd1.include(request, response);
+	}
+
+}
+
+
+
+//NewTest.java
+package com;
+
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.AfterMethod;
+
+public class NewTest {
+	@Test
+	  public void RegistrationTest () {
+		wd.get("http://localhost:8080/project__1/Registration.html");
+		WebElement emailIdRef = wd.findElement(By.id("n1"));
+		WebElement passwordRef = wd.findElement(By.id("n2"));
+		emailIdRef.sendKeys("light@gmail.com");
+		passwordRef.sendKeys("654");
+		WebElement submitButtonRef = wd.findElement(By.id("n3"));
+		submitButtonRef.click();
+	}
+	
+	@Test
+	  public void LoginTest () {
+		
+		wd.get("http://localhost:8080/project__1/index.html");
+		WebElement emailIdRef1 = wd.findElement(By.id("n1"));
+		WebElement passwordRef1 = wd.findElement(By.id("n2"));
+		emailIdRef1.sendKeys("raj@gmail.com");
+		passwordRef1.sendKeys("123");
+		WebElement submitButtonRef1 = wd.findElement(By.id("n3"));
+		submitButtonRef1.click();
+	}
+	
+	
+  @Test
+  public void amazonePageTest () {
+	   
+	    wd.get("https://www.amazon.in");
+	    wd.manage().window().maximize();
+	    wd.manage().timeouts().implicitlyWait(Duration.ofMinutes(2));
+	    WebElement textFieldRef = wd.findElement(By.id("twotabsearchtextbox"));
+	    textFieldRef.sendKeys("Samsung S20FE");
+	    WebElement buttonRef =  wd.findElement(By.id("nav-search-submit-button"));
+	    buttonRef.sendKeys(Keys.ENTER);
+	    WebElement buttonRef1 =  wd.findElement(By.linkText("Samsung Galaxy S20 FE 5G (Cloud Navy, 8GB RAM, 128GB Storage) with No Cost EMI & Additional Exchange Offers"));
+	    buttonRef1.sendKeys(Keys.ENTER);
+	    
+		
+	  
+	    
+	    
+	    
+	    
+	  
+	  
+ 
+}
+ WebDriver wd;
+ 
+  @BeforeMethod
+  public void beforeMethod() {
+	  System.setProperty("webdriver.chrome.driver", "C:\\phase 5 WorkPhase\\chromedriver_win32\\chromedriver.exe");
+		
+		 wd = new ChromeDriver();
+		 
+		
+  }
+
+  @AfterMethod
+  public void afterMethod() {
+  }
+
+}

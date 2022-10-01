@@ -1,0 +1,201 @@
+//DemoTest.java
+package com;
+
+import java.util.Iterator;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class DemoTest {
+
+	public static void main(String[] args) {
+		
+		System.setProperty("webdriver.chrome.driver", "C:\\phase 5 WorkPhase\\chromedriver_win32\\chromedriver.exe");
+		
+		WebDriver wd = new ChromeDriver();
+		//WebDriver wd = new EdgeDriver();
+		wd.get("file:///C:/phase%205%20WorkPhase/index.html"); //load static or dynamic web page
+		//String titleTagContent = wd.getTitle();
+		//String url = wd.getCurrentUrl();
+		//String pageContent= wd.getPageSource();
+		//System.out.println(titleTagContent);
+		//System.out.println(url);
+		//System.out.println(pageContent);
+		WebElement h2TagRef = wd.findElement(By.tagName("h2"));
+		WebElement pTagRef = wd.findElement(By.tagName("p"));
+		WebElement divTagRef = wd.findElement(By.tagName("div"));
+		System.out.println(h2TagRef.getTagName()+ " = "+h2TagRef.getText());
+		System.out.println(pTagRef.getTagName()+ " = "+pTagRef.getText());
+		System.out.println(divTagRef.getTagName()+ " = "+divTagRef.getText());
+		List<WebElement> listOfPTag = wd.findElements(By.tagName("p"));
+		Iterator<WebElement> li = listOfPTag.iterator();
+		while(li.hasNext()) {
+			WebElement ww = li.next();
+			System.out.println(ww.getTagName()+" "+ww.getText());
+		}
+		
+		wd.close();
+		
+	}
+
+}
+
+
+
+//LoginTest.java
+package com;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class LoginTest {
+
+	public static void main(String[] args) {
+        System.setProperty("webdriver.chrome.driver", "C:\\phase 5 WorkPhase\\chromedriver_win32\\chromedriver.exe");
+		
+		WebDriver wd = new ChromeDriver();
+		wd.get("file:///C:/phase%205%20WorkPhase/login.html");
+		//String sourceCurrentPagePath = wd.getCurrentUrl();
+		//System.out.println(sourceCurrentPagePath);
+		//WebElement emailIdRef = wd.findElement(By.id("n1"));
+		//WebElement passwordRef = wd.findElement(By.id("n2"));
+		//emailIdRef.sendKeys("eren@gmail.com");
+		//passwordRef.sendKeys("123");
+		//WebElement submitButtonRef = wd.findElement(By.id("b1"));
+		//submitButtonRef.click();
+		//String targetCurrentPagePath = wd.getCurrentUrl();
+		//System.out.println(targetCurrentPagePath);
+		//WebElement h1TagRef = wd.findElement(By.tagName("h1"));
+		//System.out.println(h1TagRef.getText());
+		
+		//WebElement resetButtonRef = wd.findElement(By.id("b2"));
+		//resetButtonRef.click();
+		
+		
+		//email validation
+		//WebElement emailIdRef = wd.findElement(By.id("n1"));
+		//WebElement passwordRef = wd.findElement(By.id("n2"));
+		//WebElement submitButtonRef = wd.findElement(By.id("b1"));
+		//submitButtonRef.click();
+		//Alert alertRef = wd.switchTo().alert();
+		//System.out.println(alertRef.getText());
+		//alertRef.accept();
+		
+		
+		//password validation
+		//WebElement emailIdRef = wd.findElement(By.id("n1"));
+		//emailIdRef.sendKeys("eren@gmail.com");
+		//WebElement passwordRef = wd.findElement(By.id("n2"));
+		//WebElement submitButtonRef = wd.findElement(By.id("b1"));
+		//submitButtonRef.click();
+		//Alert alertRef = wd.switchTo().alert();
+		//System.out.println(alertRef.getText());
+		//alertRef.accept();
+		
+		
+		
+		try {
+		wd.close();
+		}catch(Exception e) {
+			
+		}
+		
+		
+			
+		}
+	
+	
+
+}
+
+
+
+//index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Welcome to simple testing using selenium tool</h2>
+    <p>This is p tag</p>
+    <div>This is div tag</div>
+    <p>this is 2nd p tag</p>
+    <p>this is 3nd p tag</p>
+    <p>this is 4nd p tag</p>
+    <p>this is 5nd p tag</p>
+</body>
+</html>
+
+
+//login.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="validate.js"></script>
+</head>
+<body>
+    <h2>Login Page</h2>
+    <form action="welcome.html" method="get" onclick="return validateLogin()">
+        <label>emailid</label>
+        <input type="email" id="n1" name="email"/><br/>
+        <label>password</label>
+        <input type="password" id="n2" name="password"/><br/>
+        <input type="submit" value="submit" id="b1"/>
+        <input type="reset" value="reset" id="b2"/>
+    </form>
+</body>
+</html>
+
+
+
+
+//validate.js
+function validateLogin(){
+   // alert("Hello");
+   var email = document.getElementById("n1").value;
+   let password = document.getElementById("n2").value;
+   if(email.length==0){
+    alert("plz enter email id")
+    return false;
+   } else if(password.length==0){
+    alert("plz enter the password")
+    return false;
+   }else if(email=="eren@gmail.com" && password=="123"){
+    alert("Successfully login")
+    return true;
+   }else {
+    alert("failure try once again")
+        return false;
+    }
+   }
+
+
+
+//welcome.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Welcome to HTML</h1>
+    
+</body>
+</html>
