@@ -1,0 +1,285 @@
+//Employee.java
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Employee {
+	@Id
+	private int id;
+	private String name;
+	private float salary;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public float getSalary() {
+		return salary;
+	}
+	public void setSalary(float salary) {
+		this.salary = salary;
+	}
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", salary=" + salary + "]";
+	}
+	public Employee(int id, String name, float salary) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.salary = salary;
+	}
+	public Employee() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+
+}
+
+
+
+
+//EmployeeController
+package com.controller;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bean.Employee;
+import com.service.EmployeeService;
+
+@RestController
+public class EmployeeController {
+	
+	@Autowired
+	EmployeeService employeeService;
+	// http://localhost:8080/employee
+	@RequestMapping(value = "employee", method=RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public Employee getEmployeeInfo() {
+		Employee emp1 = new Employee(100,"armin",145210);
+		return emp1;
+	}
+	//http://localhost:8080/employees
+	@RequestMapping(value = "employees", method=RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<Employee> getAllEmployeeDetails(){
+		List<Employee> listOfEmp=new ArrayList<Employee>();
+		listOfEmp.add(new Employee(1,"ramesh",15000));
+		listOfEmp.add(new Employee(2,"suresh",18000));
+		listOfEmp.add(new Employee(3,"ravi",1500));
+		return listOfEmp;
+	}
+	//http://localhost:8080/employeesFromDb
+	@RequestMapping(value = "employeesFromDb", method=RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<Employee> getAllEmployeeDetailsFromDb(){
+		return employeeService.getAllEmployee();
+	}
+	// http://localhost:8080/findEmployeeById/1
+	@RequestMapping(value = "findEmployeeById/{id}",method = RequestMethod.POST)
+	public Employee findEmployeeById(@PathVariable("id") int eid) {
+		
+		return employeeService.findEmployeeById(eid);
+		
+
+}
+	// http://localhost:8080/findEmployeeByIdwithQuery?id=1	
+	@RequestMapping(value = "findEmployeeByIdWithQuery",method = RequestMethod.POST)
+	public Employee findEmployeeByIdWithQuery(@RequestParam("id") int eid) {
+		
+		return employeeService.findEmployeeById(eid);
+	}
+	//http://localhost:8080/storeEmployee
+	@RequestMapping(value = "storeEmployee",consumes=MediaType.APPLICATION_JSON_VALUE,method=RequestMethod.POST)
+	public String storeEmployee(@RequestBody Employee emp) {
+		return employeeService.storeEmployee(emp);
+		
+	}
+	// http://localhost:8080/deleteEmployee/1
+	@RequestMapping(value="deleteEmployee/{id}",method=RequestMethod.DELETE)
+	public String deleteEmployeeDetails(@PathVariable("id") int id) {
+		return employeeService.deleteEmployee(id);
+	}
+	// http://localhost:8080/updateEmployee 
+	@RequestMapping(value = "updateEmployee",consumes=MediaType.APPLICATION_JSON_VALUE,method=RequestMethod.PATCH)
+	      
+	public String updateEmployee(@RequestBody Employee emp) {
+		return employeeService.updateEmployee(emp);
+}
+}
+
+
+//EmployeeDao
+package com.dao;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.bean.Employee;
+
+@Repository
+public class EmployeeDao {
+	
+	@Autowired
+	EntityManagerFactory emf;
+	
+	public Employee getEmployeeDetails(int id) {
+		EntityManager manager = emf.createEntityManager();
+		Employee emp = manager.find(Employee.class, id);
+		return emp;
+	}
+	
+	public List<Employee> getAllEmployeeDetils() {
+		EntityManager manager = emf.createEntityManager();
+		Query qry = manager.createQuery("select e from Employee e");
+		List<Employee> listOfEmp = qry.getResultList();
+		
+		return listOfEmp;
+	}
+	
+	public int storeEmployee(Employee emp) {
+		try {
+			EntityManager manager = emf.createEntityManager();
+			EntityTransaction tran = manager.getTransaction();
+			tran.begin();
+			    manager.persist(emp);
+			tran.commit();
+			return 1;
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+	public int updateEmployeeSalary(Employee emp) {
+		EntityManager manager = emf.createEntityManager();
+		Employee e = manager.find(Employee.class, emp.getId());
+		EntityTransaction tran = manager.getTransaction();
+		if(e==null) {
+			return 0;
+			
+		} else {
+			e.setSalary(emp.getSalary());
+			tran.begin();
+			     manager.merge(e);
+			tran.commit();
+			return 1;
+		}
+	}
+	public int deleteEmployeeDetails(int id) {
+		EntityManager manager = emf.createEntityManager();
+		Employee e = manager.find(Employee.class, id);
+		EntityTransaction tran = manager.getTransaction();
+		if(e==null) {
+			return 0;
+			
+		} else {
+			
+			tran.begin();
+			     manager.remove(e);
+			tran.commit();
+			return 1;
+
+}
+	}
+}
+
+
+//Demo.java
+package com.main;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+@SpringBootApplication(scanBasePackages="com")
+@EntityScan(basePackages = "com.bean")
+public class DemoTest {
+	
+	public static void main(String[] args) {
+		SpringApplication.run(DemoTest.class, args);
+		System.out.println("Server up");
+	}
+	
+
+}
+
+
+
+
+//EmployeeService
+package com.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bean.Employee;
+import com.dao.EmployeeDao;
+
+@Service
+public class EmployeeService {
+	
+	@Autowired
+	EmployeeDao employeeDao;
+	
+	public Employee findEmployeeById(int id) {
+		return employeeDao.getEmployeeDetails(id);
+	}
+	public List<Employee> getAllEmployee() {
+		return employeeDao.getAllEmployeeDetils();
+	}
+	public String storeEmployee(Employee emp) {
+		if(employeeDao.storeEmployee(emp)>0) {
+			return "record stored";
+			
+		} else {
+			return "record didn't Stored";
+		}
+	}
+	public String deleteEmployee(int id) {
+		if(employeeDao.deleteEmployeeDetails(id)>0) {
+			return "Record deleted successfully";
+		} else {
+			return "Record didn't delete";
+		}
+	}
+	public String updateEmployee(Employee emp) {
+		Employee employeeFromDb = employeeDao.getEmployeeDetails(emp.getId());
+		if(emp.getSalary()>employeeFromDb.getSalary()) {
+			if(employeeDao.updateEmployeeSalary(emp)>0) {
+				return "Salary updated";
+			} else {
+				return "Salary didn't update";
+			}
+		} else {
+			return "New Salary must be >than old salary";
+		}
+	}
+
+}

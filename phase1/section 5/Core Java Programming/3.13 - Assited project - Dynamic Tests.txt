@@ -1,0 +1,197 @@
+package com.bean;
+
+public  class User {
+	private int id;
+	private String name;
+	private String email;
+	private String password;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + "]";
+	}
+	
+	
+	
+	
+}
+
+
+
+package com.service;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import com.bean.User;
+
+;
+
+
+
+public class UserAuthenticationService {
+	
+	public String checkUser(String emailid, String password) {
+		if(emailid.equals("eren@gmail.com") && password.equals("123")) {
+			return "success";
+					
+		} else {
+			return "failure";
+					
+
+}
+	}
+		public User getUser() {
+			User u = new User();
+			u.setId(1);
+			u.setName("raj");
+		    u.setEmail("r@gmail.com");
+		    u.setPassword("abc");
+		    return u;
+					
+		
+}
+		public List<User> listOfUser() {
+			List<User> listOfU = new ArrayList<User>();
+			User u1 = new User();
+			u1.setId(1);
+			u1.setName("raj");
+		    u1.setEmail("r@gamil.com");
+		    u1.setPassword("abc");
+		    
+		    User u2 = new User();
+			u2.setId(1);
+			u2.setName("ravi");
+		    u2.setEmail("ra@gamil.com");
+		    u2.setPassword("abcd");
+			
+			listOfU.add(u1);
+			listOfU.add(u2);
+			return listOfU;
+}
+}
+
+
+
+//Entitytests.java
+package com.test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+import com.bean.User;
+
+class EntityTests {
+
+	@Test
+	public void getAndSetPassword() {
+		User testUser = new User();
+		
+		testUser.setPassword("mypassword");
+		assertEquals(testUser.getPassword(),"mypassword");
+	}
+	
+	@Test
+	public void getAndSetName() {
+		User testUser = new User();
+		
+		testUser.setName("joe");
+		assertEquals(testUser.getName(),"joe");
+	}
+	
+	@Test
+	public void getAndSetEmail() {
+		User testUser = new User();
+		
+		testUser.setEmail("joe@email.com");
+		assertEquals(testUser.getEmail(),"joe@email.com");
+	}
+	
+	@Test
+	public void checkToString() {
+		User testUser = new User();
+		
+		assertNotNull(testUser.toString());
+	}
+}
+
+
+
+
+package com.test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+
+import com.bean.User;
+
+import com.service.UserAuthenticationService;
+
+class UserAuthenticationServiceTest {
+
+	@Test
+	@DisplayName("check user Authentication")
+	void testCheckUser() {
+		//fail("Not yet implemented");
+		
+			UserAuthenticationService es = new UserAuthenticationService();
+			String result = es.checkUser("eren@gmail.com","123");
+			assertEquals("success", result);
+			
+			String result1 = es.checkUser("e@gmail.com","123");
+			assertEquals("failure", result1);
+		}
+	@Test
+	void testGetUser() {
+		//fail("Not yet implemented");
+		UserAuthenticationService es = new UserAuthenticationService ();
+		User u = es.getUser();
+		assertNotNull(u);
+		assertEquals(1, u.getId());
+		assertEquals("raj", u.getName());
+		assertEquals("r@gmail.com", u.getEmail());
+		assertEquals("abc", u.getPassword());
+	}
+	@Test
+	void testListOfUser() {
+		//fail("Not yet implemented");
+		UserAuthenticationService es = new UserAuthenticationService ();
+		List<User> listOfU = es.listOfUser();
+		assertEquals(2, listOfU.size());
+}
+}
+		
+	
+
+

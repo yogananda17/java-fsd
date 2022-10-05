@@ -1,0 +1,45 @@
+//Product.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+          <h2>enter product details</h2>  
+          pid: ${param.pid }
+          <br/>
+          pname:${param.pname }
+          <br/>
+          price:${param.price }
+          
+</body>
+</html>
+
+
+
+//addProduct.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+       <form action="product.jsp">
+       pid:<input type="text" name="pid" />
+       <br/>
+       pname:<input type="text" name="pname"/>
+       <br/>
+       price:<input type="text" name="price"/>
+       <br/>
+       <input type="submit" value="submit"/>
+       <input type="reset" value="reset"/>
+       </form>
+
+</body>
+</html>

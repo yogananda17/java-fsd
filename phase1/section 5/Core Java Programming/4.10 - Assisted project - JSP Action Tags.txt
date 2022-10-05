@@ -1,0 +1,102 @@
+//index.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JSP Action Tags</title>
+</head>
+<body>
+Usage of useBean tag<br>
+<jsp:useBean id="productBean" class="com.ecommerce.ProductBean" scope="session"></jsp:useBean>
+        <jsp:setProperty property="productId" name="productBean" value="18791"/>
+        <jsp:setProperty property="productName" name="productBean" value="Optical Wireless Mouse"/>
+        <jsp:setProperty property="price" name="productBean" value="600.00"/>
+<a href="showbean.jsp">Access bean properties from another page</a><br>
+<a href="forward.jsp">Use Forward action to go to Google</a><br>
+
+<hr>
+
+<jsp:text>
+        <![CDATA[This is my content.<br/>This will show within a text action tag exactly as it has been entered]]>
+</jsp:text>
+
+</body>
+</html>
+
+
+//forward.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
+
+<jsp:forward page="forwarded.jsp"></jsp:forward>
+
+
+//forwarded.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Forward Test</title>
+</head>
+<body>
+This page came from forward.jsp by using jsp:forward action tag
+
+</body>
+</html>
+
+
+//showbean.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Display Bean properties</title>
+</head>
+<body>
+<jsp:useBean id="productBean" class="com.ecommerce.ProductBean" scope="session"></jsp:useBean>
+        Product Id:    <jsp:getProperty name="productBean" property="productId" />  <br>
+        Product Name:    <jsp:getProperty name="productBean" property="productName" />  <br>
+        Product Price:    <jsp:getProperty name="productBean" property="price" />  <br>
+
+</body>
+</html>
+
+
+//ProductBean
+package com.ecommerce;
+import java.io.Serializable;
+
+public class ProductBean implements Serializable{
+        private String productId;
+        private String productName;
+        private double price;
+        
+        public void setProductId(String value) {
+                this.productId = value;
+        }
+public void setProductName(String value) {
+                this.productName = value;
+        }
+        public void setPrice(double value) {
+                this.price = value;
+        }
+        
+        public String getProductId() {
+                return this.productId;
+        }
+        public String getProductName() {
+                return this.productName;
+        }
+        public double getPrice() {
+                return this.price;
+        }
+        
+
+}
+
+
+
+
+

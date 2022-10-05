@@ -1,0 +1,100 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<form action="addProductDetails.jsp" method="post">
+        <label>pid</label>
+        <input type="text" name="pid"><br/>
+        <label>pname</label>
+        <input type="text" name="pname"><br/>
+        <label>price</label>
+        <input type="text" name="price"><br/>
+        <input type="submit" value="submit">
+        <input type="reset" value="reset">
+        
+</form>
+</body>
+</html>
+
+
+<%@page import="java.util.ArrayList" %>
+<%@page import="java.lang.reflect.Array" %>
+<%@page import="java.util.List" %>
+
+
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%!int pid; %> <%!String pname; %> <%!float price; %>
+<%
+Object obj = session.getAttribute("obj");
+List<String> listOfProduct;
+if(obj == null){
+
+	listOfProduct = new ArrayList<String>();
+	pid = Integer.parseInt(request.getParameter("pid"));
+    pname = request.getParameter("pname");
+    price = Float.parseFloat(request.getParameter("price"));
+	listOfProduct.add("pid");
+	listOfProduct.add("pname");
+	listOfProduct.add("price");
+	session.setAttribute("obj", listOfProduct);
+	
+  } else {
+	pid = Integer.parseInt(request.getParameter("pid"));
+    pname = request.getParameter("pname");
+	price = Float.parseFloat(request.getParameter("price"));
+	listOfProduct = (List<String>)session.getAttribute("obj");
+	listOfProduct.add("pid");
+	listOfProduct.add("pname");
+	listOfProduct.add("price");
+	
+	    out.println("pid is "+pid+"<br/>");
+		out.println("pname is "+pname+"<br/>");
+		out.println("price is "+price+"<br/>");
+		
+	
+	
+}
+%>
+<%@include file="ProductDetails.jsp" %>
+
+</body>
+</html>
+
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ProjectDetails</groupId>
+  <artifactId>ProjectDetails</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.3</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>

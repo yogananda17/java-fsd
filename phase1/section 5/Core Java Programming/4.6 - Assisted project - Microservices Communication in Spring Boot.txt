@@ -1,0 +1,224 @@
+package com;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+@SpringBootApplication(scanBasePackages = "com")
+@EntityScan(basePackages = "com.bean")
+@EnableJpaRepositories(basePackages="com.repository")
+@EnableEurekaClient
+public class EmployeeManagementSystemMicroServiceClientApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(EmployeeManagementSystemMicroServiceClientApplication.class, args);
+		System.out.println("employee management micro service up!");
+	}
+
+}
+
+
+
+
+package com.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Employee {
+	@Id
+	private int id;
+	private String name;
+	private float salary;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public float getSalary() {
+		return salary;
+	}
+	public void setSalary(float salary) {
+		this.salary = salary;
+	}
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", salary=" + salary + "]";
+	}
+	
+	
+
+}
+
+
+
+
+package com.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bean.Employee;
+import com.service.EmployeeService;
+
+//http://localhost:8383/employees
+
+@RestController
+@RequestMapping("employees")
+public class EmployeeController {
+	
+	
+	@Autowired
+	EmployeeService employeeService;
+	
+	//http://localhost:8383/employees/findAll
+	
+	//@RequestMapping = "findAll",method = RequestMethod.GET,produce=MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "findAll",produces=MediaType.APPLICATION_JSON_VALUE)
+	public List<Employee> getAllEmployee(){
+		return employeeService.getAllEmployee();
+	}
+	@PostMapping(value = "storeEmployee",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String storeEmployee(@RequestBody Employee emp) {
+		return employeeService.storeEmployee(emp);
+	}
+	@PutMapping(value = "updateEmployee",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String updateEmployee(@RequestBody Employee emp) {
+		return employeeService.updateEmployeeSalary(emp);
+	}
+	
+	@DeleteMapping(value = "deleteEmployee/{id}")
+	public String deleteEmployee(@PathVariable("id") int id) {
+		return employeeService.deleteEmployee(id);
+	}
+	
+	@GetMapping(value= "findEmployeeId/{id}")
+	public String findEmployee(@PathVariable("id") int id) {
+		return employeeService.findEmployee(id);
+	}
+	
+	
+
+}
+
+
+
+package com.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.stereotype.Repository;
+
+import com.bean.Employee;
+
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, Integer>{
+	
+
+}
+
+
+
+package com.service;
+
+import java.util.List;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bean.Employee;
+import com.repository.EmployeeRepository;
+
+@Service
+public class EmployeeService {
+	
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	public List<Employee> getAllEmployee(){
+		return employeeRepository.findAll();
+	}
+	
+	public String storeEmployee(Employee emp) {
+	    Optional<Employee> op = employeeRepository.findById(emp.getId());
+	    if(op.isPresent()) {
+	    	return "Employee id must be unique";
+	    } else {
+	    	employeeRepository.save(emp);          //insert new records
+	    	return "Record stored successfully";
+	  
+	    }
+	}
+	public String updateEmployeeSalary(Employee emp) {
+	    Optional<Employee> op = employeeRepository.findById(emp.getId());
+	    if(op.isPresent()) {
+	    	        Employee e = op.get();
+	    	        e.setSalary(emp.getSalary());
+	    	        employeeRepository.saveAndFlush(e);     //update  exisiting record update property
+	    	        return "record updated successfully";
+	    } else {
+	    	
+	    	return "Record not present";
+	  
+	    }
+	}
+	public String deleteEmployee(int id) {
+	    Optional<Employee> op = employeeRepository.findById(id);
+	    if(op.isPresent()) {
+	    	            Employee e = op.get();
+	    	            employeeRepository.delete(e);
+	    	return "Employee successfully deleted";
+	    } else {
+	    	          
+	    	return "Record not present";
+	  
+	    }
+	}
+	public String findEmployee(int id) {
+		Optional<Employee> op = employeeRepository.findById(id);
+	    if(op.isPresent()) {
+	    	 Employee e = op.get();
+	    	 return e.toString();
+	    } else {
+	    	          
+	    	return "Record not present";
+	  
+	    }
+		
+	}
+//	public Employee findEmployeeById(int id) {
+//		Optional<Employee> op = employeeRepository.findById(id);
+//	    if(op.isPresent()) {
+//	    	 Employee e = op.get();
+//	    	 return e;
+//	    } else {
+	    	          
+//	    	return null;
+	  
+//	    }
+		
+//	}
+
+}

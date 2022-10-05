@@ -1,0 +1,30 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+
+
+
+Aim:As a developer, deploy your Spring Boot application on Cloud.
+
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:Create Spring Boot Application
+Step 3:Run Spring Boot Application
+Step 4:Lanch AWS
+Step 5:Create S3 bucket and Create new key pair
+Step 6:Click on Create Bucket
+Step 7:Create EC2 instance
+Step 8:Check EC2 instance is running or not
+Step 9:Copy SSH link Run on Bash
+Step 10:Copy the url of jar file
+Step 11:Check jar file is dowloading or not
+Step 12:Copy Ip address 
+Step 13:Paste in new tab with Server port number
+Step 14:Run the project
+Step 15:Stop the project.

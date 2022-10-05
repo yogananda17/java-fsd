@@ -1,0 +1,317 @@
+//index1.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Product Management System</h2>
+<a href="storeproduct.html">Add Product</a> !
+
+</body>
+</html>
+
+
+
+//storeproduct.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Add Product</h2>
+<form action="productStoreController method="post">
+     <label>product_id</label>
+     <input type="number" name="product_id"><br/>
+     <label>product_name</label>
+     <input type="text" name="product_name"><br/>
+     <label>product_price</label>
+     <input type="number" name="product_price"><br/>
+     <input type ="submit" value="store product">
+     <input type="reset" value="reset">
+</form>
+<br/>
+<a href="index1.html">Main Page</a>
+
+
+</body>
+</html>
+
+
+
+//hibernate.cfg.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.password">root@123</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/javatrainingdb</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+        <mapping class="com.bean.Trainer"/>
+         <mapping class="com.bean.Student"/>
+    </session-factory>
+</hibernate-configuration>
+
+
+//product.java
+package com.bean;
+
+import javax.persistence.Entity;
+
+import javax.persistence.Id;
+@Entity
+public class product {
+	@Id
+	private int product_id;
+	private String product_name;
+	private float product_price;
+	public int getProduct_id() {
+		return product_id;
+	}
+	public void setProduct_id(int product_id) {
+		this.product_id = product_id;
+	}
+	public String getProduct_name() {
+		return product_name;
+	}
+	public void setProduct_name(String product_name) {
+		this.product_name = product_name;
+	}
+	public float getProduct_price() {
+		return product_price;
+	}
+	public void setProduct_price(float product_price) {
+		this.product_price = product_price;
+	}
+	@Override
+	public String toString() {
+		return "product [product_id=" + product_id + ", product_name=" + product_name + ", product_price="
+				+ product_price + "]";
+	}
+}
+
+
+
+
+//productStoreController.java
+package com.controller;
+
+import java.io.IOException;
+
+
+import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.bean.product;
+import com.service.productService;
+
+/**
+ * Servlet implementation class productStoreController
+ */
+public class productStoreController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public productStoreController() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//doGet(request, response);
+		PrintWriter pw = response.getWriter();
+		response.setContentType("text/html");
+		int product_id = Integer.parseInt(request.getParameter("product_id"));
+		String product_name = request.getParameter("product_name");
+		float product_price = Float.parseFloat(request.getParameter("product_price"));
+		
+		product p = new product();
+		p.setProduct_id(product_id);
+		p.setProduct_name(product_name);
+		p.setProduct_price(product_price);
+		
+		productService ps = new productService();
+		
+		String result = ps.storeproduct(p);
+		
+		pw.print(result);
+		RequestDispatcher rd = request.getRequestDispatcher("storeproduct.html");
+		rd.include(request,  response);
+	}
+
+}
+
+
+//productDao.java
+package com.Dao;
+
+import org.hibernate.Session;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+import com.bean.product;
+
+public class productDao {
+
+	public int storeproduct(product product) {
+		try {
+			Configuration con = new Configuration();
+			con.configure("hibernate.cfg.xml");
+			SessionFactory sf = con.buildSessionFactory();
+			Session session = sf.openSession();
+			
+			Transaction tran = session.getTransaction();
+		    tran.begin();
+			        session.save(product);
+			tran.commit();
+			return 1;
+			
+		} catch (Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+
+
+
+
+public int deleteproduct(int product_id) {
+	
+		Configuration con = new Configuration();
+		con.configure("hibernate.cfg.xml");
+		SessionFactory sf = con.buildSessionFactory();
+		Session session = sf.openSession();
+		
+		Transaction tran = session.getTransaction();
+	    product pp = session.get(product.class,product_id);
+	    if(pp==null) {
+	    	return 0;
+	} else {
+		tran.begin();
+		session.delete(pp);
+		tran.commit();
+		return 1;
+	
+}
+}
+
+
+public int updateproduct(product product) {
+	
+	Configuration con = new Configuration();
+	con.configure("hibernate.cfg.xml");
+	SessionFactory sf = con.buildSessionFactory();
+	Session session = sf.openSession();
+	
+	Transaction tran = session.getTransaction();
+    product pp = session.get(product.class,product.getProduct_id());
+    if(pp==null) {
+    	return 0;
+} else {
+	tran.begin();
+	pp.setProduct_price(product.getProduct_price());
+	session.update(pp);
+	tran.commit();
+	return 1;
+
+}
+}
+
+public product findProduct(int product_id) {
+	Configuration con = new Configuration();
+	con.configure("hibernate.cfg.xml");
+	SessionFactory sf = con.buildSessionFactory();
+	Session session = sf.openSession();
+	product pp = session.get(product.class, product_id);
+	return pp;
+	
+}
+}
+
+
+
+
+
+
+
+//productService.java
+package com.service;
+
+import com.bean.product;
+import com.Dao.productDao;
+
+public class productService {
+	productDao pd = new productDao();
+	public String storeproduct(product product) {
+		if(product.getProduct_price()<100) {
+			return"Product price must be > 100";
+			
+		} else if(pd.storeproduct(product)>0) {
+			return"Product stored successfully";
+		} else {
+			return"Product didn't store id must be unique";
+		}
+	}
+	
+	public String deleteProduct(int ProductId) {
+		if(pd.deleteproduct(ProductId)>0) {
+			return "product details deleted successfully";
+		} else {
+			return "product not present";
+		}
+	}
+	
+	public String updateProduct(product product) {
+		product pp =pd.findProduct(product.getProduct_id());
+		
+		if(pp==null) {
+			return "product not present";
+		} else if(product.getProduct_price()<pp.getProduct_price()) {
+			return "new price must be > than old price";
+		} else if(pd.updateproduct(product)>0) {
+			return "product details updated successfully";
+		} else {
+			return "product didn't upadte";
+		}
+	}
+	
+	public String findProduct(int product_id) {
+		product pp = pd.findProduct(product_id);
+		if(pp==null) {
+			return "product not present";
+		} else {
+			return pp.toString();
+		}
+	}
+
+}
+
+

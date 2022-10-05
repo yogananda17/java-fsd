@@ -1,0 +1,199 @@
+//DAO
+package com.java.insertproduct;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+
+import org.practice.project.util.StringUtil;
+
+public class DAO {
+	public Connection con = null;
+	public Statement st = null;
+
+	public DAO() throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce", "root", "12345678");
+		System.out.println("connection established with database");
+		st = con.createStatement();
+	}
+
+	public boolean insertProducts(HashMap<String, String> product) throws SQLException {
+
+		String query1 = "INSERT INTO product ( name, price, qty ) VALUES" + " ('"
+				+ StringUtil.fixSqlFieldValue(product.get("name")) + "'," + " '"
+				+ StringUtil.fixSqlFieldValue(product.get("price")) + "'," + " '"
+				+ StringUtil.fixSqlFieldValue(product.get("qty")) + "')";
+
+
+		try {
+			st.execute(query1);
+			return true;
+		} catch (SQLException e) {
+			System.out.print("Error in inserting");
+			e.printStackTrace();
+		}
+		return false;
+	}
+}
+	
+
+
+//InsertProduct
+package com.java.servlets;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.java.insertproduct.DAO;
+
+/**
+ * Servlet implementation class InsertProduct
+ */
+@WebServlet("/InsertProduct")
+public class InsertProduct extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String pid = request.getParameter("pid");
+		String pname = request.getParameter("pname");
+		String price = request.getParameter("price");
+		
+
+		HashMap<String, String> product = new HashMap<>();
+		product.put("pid", pid);		
+		product.put("pname", pname);
+		product.put("price", price);
+		
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/product", "root", "root@123");
+			Statement st = (Statement) conn.createStatement();
+
+			int i = ((java.sql.Statement) st).executeUpdate("insert into product( pid, pname, price)values('" + pid + "','"+ pname +"','"+price+ "')");
+
+		} catch (Exception e) {
+			System.out.print(e);
+			e.printStackTrace();
+		}
+
+		try {
+			DAO dao = new DAO();
+			HttpSession session = request.getSession();
+			if (dao.insertProducts(product)) {
+
+				session.setAttribute("message", "Product Added Successfully");
+			} else {
+				session.setAttribute("message", "Invalid Details");
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.print("error");
+			e.printStackTrace();
+		}
+		response.sendRedirect("index.jsp");
+
+	}
+}
+
+//hibernate.cfg.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.password">root@123</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/javatraining</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <mapping class="com.product"/>
+    </session-factory>
+</hibernate-configuration>
+
+
+//web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>HibernatewithServlet</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>productController</display-name>
+    <servlet-name>productController</servlet-name>
+    <servlet-class>com.controller.productController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>productController</servlet-name>
+    <url-pattern>/productController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>productcontrol</display-name>
+    <servlet-name>productcontrol</servlet-name>
+    <servlet-class>com.productcontrol</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>productcontrol</servlet-name>
+    <url-pattern>/productcontrol</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>InsertProduct</display-name>
+    <servlet-name>InsertProduct</servlet-name>
+    <servlet-class>com.java.servlets.InsertProduct</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InsertProduct</servlet-name>
+    <url-pattern>/InsertProduct</url-pattern>
+  </servlet-mapping>
+</web-app>
+
+
+
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Add Product</h2>
+<form action="productStoreController method="post">
+     <label>product_id</label>
+     <input type="number" name="product_id"><br/>
+     <label>product_name</label>
+     <input type="text" name="product_name"><br/>
+     <label>product_price</label>
+     <input type="number" name="product_price"><br/>
+     <input type ="submit" value="store product">
+     <input type="reset" value="reset">
+</form>
+<br/>
+
+
+
+</body>
+</html>
