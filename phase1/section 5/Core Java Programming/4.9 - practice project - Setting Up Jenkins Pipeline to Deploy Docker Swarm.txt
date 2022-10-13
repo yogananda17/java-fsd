@@ -1,0 +1,41 @@
+
+
+
+sudo amazon-linux-extras install java-openjdk11
+
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+
+
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+
+sudo yum install jenkins
+
+
+sudo service jenkins start
+
+
+sudo systemctl status jenkins
+
+
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+
+
+pipeline {
+    agent any
+    stages {
+        stage('Check Docker Version') {
+            steps {
+                    sh "docker --version"
+                    sh "docker pull yogananda17/my-angular123:1.0"
+                    sh "docker images"
+                    sh "docker swarm init"
+                    sh "docker node ls"
+                    sh "docker service create -p 80:80 --name myService yogananda17/my-angular123:1.0"
+                    sh "docker service ls"
+            }
+        }
+    }
+}

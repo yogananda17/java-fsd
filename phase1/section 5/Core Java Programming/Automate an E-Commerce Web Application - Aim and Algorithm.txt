@@ -1,0 +1,25 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+
+Aim:To automate a real-world web application
+
+
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:Create class 
+Step 3:Give flipkart link to automate
+Step 4:Create suit
+Step 5:Create TestNG
+Step 6:Create singupTest
+Step 8:Create LoginTest
+Step 9:Create amazoneTestPage
+Step 10:Automate With different functionalities.
+Step 11:run the program
+Step 12:Stop the program.

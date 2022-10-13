@@ -1,0 +1,20 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+Aim:You have to deploy ELK Stack on a Docker container to implement continuous monitoring.
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:Create instance
+Step 3:After running instance click on connect
+Step 4:Run the commands on cmd
+Step 5:clone with git url
+Step 6:Enter in to your directory
+Step 7:run the command 
+Step 8:check it is successful or not
+Step 9:Stop the program

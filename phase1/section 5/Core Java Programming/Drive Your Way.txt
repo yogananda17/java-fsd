@@ -1,0 +1,1394 @@
+package com.example.backend;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+@SpringBootApplication(scanBasePackages = "com")
+@EntityScan(basePackages = "com.CarSelling.bean")
+@EnableJpaRepositories(basePackages = "com.CarSelling.repository")
+public class OnlineCarSellingApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(OnlineCarSellingApplication.class, args);
+	}
+
+}
+
+
+
+//login.java
+package com.CarSelling.bean;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Login {
+	@Id
+	private String emailid;
+	private String password;
+	@Column(name = "typeofuser")
+	private String typeOfUser;
+	public String getEmailid() {
+		return emailid;
+	}
+	public void setEmailid(String emailid) {
+		this.emailid = emailid;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getTypeOfUser() {
+		return typeOfUser;
+	}
+	public void setTypeOfUser(String typeOfUser) {
+		this.typeOfUser = typeOfUser;
+	}
+
+	}
+
+
+
+
+//car.java
+package com.CarSelling.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Car {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int cid;
+	private String cname;
+	private float cprice;
+	private float cmodel;
+	private String url;
+	public int getCid() {
+		return cid;
+	}
+	public void setCid(int cid) {
+		this.cid = cid;
+	}
+	public String getCname() {
+		return cname;
+	}
+	public void setCname(String cname) {
+		this.cname = cname;
+	}
+	public float getCprice() {
+		return cprice;
+	}
+	public void setCprice(float cprice) {
+		this.cprice = cprice;
+	}
+	public float getCmodel() {
+		return cmodel;
+	}
+	public void setCmodel(float cmodel) {
+		this.cmodel = cmodel;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	@Override
+	public String toString() {
+		return "Car [cid=" + cid + ", cname=" + cname + ", cprice=" + cprice + ", cmodel=" + cmodel + ", url=" + url
+				+ "]";
+	}
+	
+
+}
+
+
+
+//usercar.java
+package com.CarSelling.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class UserCar {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int cid;
+	private String cname;
+	private float cprice;
+	private float cmodel;
+	private String url;
+	public int getCid() {
+		return cid;
+	}
+	public void setCid(int cid) {
+		this.cid = cid;
+	}
+	public String getCname() {
+		return cname;
+	}
+	public void setCname(String cname) {
+		this.cname = cname;
+	}
+	public float getCprice() {
+		return cprice;
+	}
+	public void setCprice(float cprice) {
+		this.cprice = cprice;
+	}
+	public float getCmodel() {
+		return cmodel;
+	}
+	public void setCmodel(float cmodel) {
+		this.cmodel = cmodel;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	@Override
+	public String toString() {
+		return "Car [cid=" + cid + ", cname=" + cname + ", cprice=" + cprice + ", cmodel=" + cmodel + ", url=" + url
+				+ "]";
+	}
+	
+
+}
+
+
+
+package com.CarSelling.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.CarSelling.bean.Login;
+
+@Repository
+public interface LoginRepository extends JpaRepository<Login, String> {
+	
+	
+
+}
+
+
+
+package com.CarSelling.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.CarSelling.bean.Car;
+
+@Repository
+public interface CarRepository extends JpaRepository<Car, Integer>{
+
+}
+
+
+
+package com.CarSelling.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.CarSelling.bean.UserCar;
+
+
+
+@Repository
+public interface UserCarRepository extends JpaRepository<UserCar, Integer> {
+
+}
+
+
+
+package com.CarSelling.service;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.CarSelling.bean.Login;
+import com.CarSelling.repository.LoginRepository;
+
+@Service
+public class LoginService {
+	@Autowired
+	LoginRepository loginRepository;
+	public String signIn(Login login) {
+		Optional<Login> result = loginRepository.findById(login.getEmailid());
+		if(result.isPresent()) {
+					Login ll = result.get();
+					if(ll.getPassword().equals(login.getPassword())) {		
+						
+				if(login.getTypeOfUser().equals(ll.getTypeOfUser()) && login.getTypeOfUser().equals("admin")) {
+							return "Admin sucessfully login";
+				}else if(login.getTypeOfUser().equals(ll.getTypeOfUser()) && login.getTypeOfUser().equals("user")){
+							return "User successfully login";
+						}else {
+							return "Invalid details";
+						}					
+					}else {
+						return "InValid password";
+					}
+		}else {
+			return "InValid emailId";
+		}		
+	}
+	public String signUp(Login login) {
+		Optional<Login> result = loginRepository.findById(login.getEmailid());
+		if(result.isPresent()) {
+					return "Email Id alreay exists";
+		}else {
+			if(login.getTypeOfUser().equals("admin")) {
+				return "You can't create admin account";
+			}else {
+				loginRepository.save(login);
+				return "Account created successfully";
+			}
+			
+		}	
+	}
+}
+
+
+
+
+package com.CarSelling.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.CarSelling.bean.Car;
+import com.CarSelling.repository.CarRepository;
+
+@Service
+public class CarService {
+	
+	@Autowired
+	CarRepository carRepository;
+	
+	public String storeCar(Car car) {
+		carRepository.save(car);
+		return "Car details stored";
+	}
+	
+	public List<Car> getAllCars() {
+		return carRepository.findAll();
+	}
+	
+	
+	
+	public String deleteCar(int cid) {
+		Optional<Car> result  = carRepository.findById(cid);
+		if(result.isPresent()) {
+			Car c = result.get();
+			carRepository.delete(c);
+			return "Car deleted successfully";
+		}else {
+			return "Car not present";
+		}
+	}
+	
+	public String updateCar(Car car) {
+		Optional<Car> result  = carRepository.findById(car.getCid());
+		if(result.isPresent()) {
+			Car c = result.get();
+			c.setCprice(car.getCprice());
+			c.setCmodel(car.getCmodel());
+			c.setUrl(car.getUrl());
+			carRepository.saveAndFlush(c);
+			return "Car updated successfully";
+		}else {
+			return "Car not present";
+		}
+	}
+
+}
+
+
+package com.CarSelling.service;
+
+import java.util.List;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+import com.CarSelling.bean.UserCar;
+import com.CarSelling.repository.UserCarRepository;
+
+@Service
+public class UserCarService {
+	
+	
+	@Autowired
+	UserCarRepository usercarRepository;
+	
+	public String storeUserCar(UserCar usercar) {
+		usercarRepository.save(usercar);
+		return "Car details stored";
+	}
+	
+	public List<UserCar> getAllUserCars() {
+		return usercarRepository.findAll();
+	}
+	
+	
+	
+	public String deleteUserCar(int cid) {
+		Optional<UserCar> result  = usercarRepository.findById(cid);
+		if(result.isPresent()) {
+			UserCar uc = result.get();
+			usercarRepository.delete(uc);
+			return "Car deleted successfully";
+		}else {
+			return "Car not present";
+		}
+	}
+	
+	public String updateUserCar(UserCar usercar) {
+		Optional<UserCar> result  = usercarRepository.findById(usercar.getCid());
+		if(result.isPresent()) {
+			UserCar uc = result.get();
+			uc.setCprice(usercar.getCprice());
+			uc.setCmodel(usercar.getCmodel());
+			uc.setUrl(usercar.getUrl());
+			usercarRepository.saveAndFlush(uc);
+			return "Car updated successfully";
+		}else {
+			return "Car not present";
+		}
+	}
+
+}
+
+
+
+
+
+
+package com.CarSelling.controller;
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.CarSelling.bean.Login;
+import com.CarSelling.service.LoginService;
+
+@RestController
+@RequestMapping("login")
+@CrossOrigin
+public class LoginController {
+	
+	@Autowired
+	LoginService loginService;
+	
+	
+	@PostMapping(value = "signIn",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String signIn(@RequestBody Login login) {
+		System.out.println("I cam here");
+	
+		return loginService.signIn(login);
+		
+	}
+	
+	@PostMapping(value = "signUp",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String signUp(@RequestBody Login login) {
+		System.out.println(login);
+		return loginService.signUp(login);
+
+}
+	}
+
+
+
+package com.CarSelling.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.CarSelling.bean.Car;
+import com.CarSelling.service.CarService;
+
+@RestController
+@RequestMapping("car")
+@CrossOrigin
+public class CarController {
+	
+	@Autowired
+	CarService carService;
+	
+	
+	@PostMapping(value = "storeCar",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String storeCar(@RequestBody Car car) {
+		return carService.storeCar(car);
+	}
+	
+	@PatchMapping(value = "updateCar",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String updateCar(@RequestBody Car car) {
+		return carService.updateCar(car);
+	}
+	
+	@GetMapping(value="findAllCar",produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<Car> getAllCar() {
+		return carService.getAllCars();
+	}
+	
+	@DeleteMapping(value="deleteCar/{cid}")
+	public String deleteCarUsingId(@PathVariable("cid") int cid) {
+		return carService.deleteCar(cid);
+	}
+
+}
+
+
+
+package com.CarSelling.controller;
+
+import java.util.List;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import com.CarSelling.bean.UserCar;
+import com.CarSelling.service.UserCarService;
+
+@RestController
+@RequestMapping("usercar")
+@CrossOrigin
+public class UserCarController {
+	
+	@Autowired
+	UserCarService usercarService;
+	
+	
+	@PostMapping(value = "storeUserCar",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String storeUserCar(@RequestBody UserCar usercar) {
+		return usercarService.storeUserCar(usercar);
+	}
+	
+	@PatchMapping(value = "updateUserCar",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String updateUserCar(@RequestBody UserCar usercar) {
+		return usercarService.updateUserCar(usercar);
+	}
+	
+	@GetMapping(value="findAllUserCar",produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<UserCar> getAllUserCar() {
+		return usercarService.getAllUserCars();
+	}
+	
+	@DeleteMapping(value="deleteUserCar/{cid}")
+	public String deleteUserCarUsingId(@PathVariable("cid") int cid) {
+		return usercarService.deleteUserCar(cid);
+	}
+
+}
+
+
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/capstone1
+spring.datasource.username=root
+spring.datasource.password=root@123
+spring.jpa.hibernate.ddl-auto=update 
+server.port=9090
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.12</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>backend</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>OnlineCarSelling</name>
+	<description>Demo project for Spring Boot</description>
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+
+
+
+
+//frontend
+<div class="n1">
+    <h2>Find Your Car</h2>
+    <img src="../assets/images/bg2.jfif" alt="">
+</div>
+
+
+
+
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+
+
+
+<div>
+    <h2>Login Page</h2>
+    <form  [formGroup]="loginRef" (ngSubmit)="signIn()">
+        <label>EmailId</label>
+        <input type="email" formControlName="emailid"/><br/>
+        <label>Password</label>
+        <input type="password" formControlName="password"/><br/>
+        <label>TypeOfUser</label>
+        <input type="radio" name="typeOfUser" value="admin" formControlName="typeOfUser"/>admin
+        <input type="radio" name="typeOfUser" value="user" formControlName="typeOfUser"/>user<br/>
+        <input type="submit" value="signIn"/>
+        <input type="reset" value="reset"/>
+    </form>
+    <br/>
+    <span style="color:red">{{msg}}</span>
+    <a routerLink="/signUp">SignUp</a>
+</div>
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { LoginService } from '../login.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+  loginRef = new FormGroup({
+    emailid:new FormControl(),
+    password:new FormControl(),
+    typeOfUser:new FormControl()
+  });
+  msg:string=""
+
+  constructor(public ls:LoginService,public router:Router) { }
+
+  ngOnInit(): void {
+  }
+  signIn(){
+    let login = this.loginRef.value;
+    console.log(login);
+    this.ls.signIn(login).subscribe({
+      next:(result:any)=>{
+        if(result=="Admin sucessfully login"){
+            sessionStorage.setItem("userDetails",login.emailid);
+            this.router.navigate(["adminHome"])
+        }else if(result=="User successfully login"){
+          sessionStorage.setItem("userDetails",login.emailid);
+          this.router.navigate(["userHome"])
+        }else {
+            this.msg=result;
+        }
+      },
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("completed")
+    })
+  }
+
+}
+
+
+
+
+<div>
+    <h2>Register</h2>
+    <form [formGroup]="loginRef" (ngSubmit)="signUp()">
+        <label>EmailId</label>
+        <input type="email" formControlName="emailid"/><br/>
+        <label>Password</label>
+        <input type="password" formControlName="password"/><br/>
+        <label>TypeOfUser</label>
+        <input type="radio" name="typeOfUser" value="admin" formControlName="typeOfUser"/>admin
+        <input type="radio" name="typeOfUser" value="user" formControlName="typeOfUser"/>user<br/>
+        <input type="submit" value="signUp"/>
+        <input type="reset" value="reset"/>
+    </form>
+    <br/>
+    <span style="color:red">{{msg}}</span><br/>
+    <a routerLink="/login">login</a>
+</div>
+
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { LoginService } from '../login.service';
+
+@Component({
+  selector: 'app-signup',
+  templateUrl: './signup.component.html',
+  styleUrls: ['./signup.component.css']
+})
+export class SignupComponent implements OnInit {
+  loginRef = new FormGroup({
+    emailid:new FormControl(),
+    password:new FormControl(),
+    typeOfUser:new FormControl()
+  });
+  msg:string=""
+
+  constructor(public ls:LoginService) { }
+
+  ngOnInit(): void {
+  }
+  signUp() {
+    let login = this.loginRef.value;
+    this.ls.signUp(login).subscribe({
+      next:(result:any)=>this.msg=result,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("completed")
+    })
+  }
+
+}
+
+
+
+<div>
+    <h2>Welcome Come Back {{user}}</h2>
+    <a routerLink="addCar">Add Car</a>|
+    <a routerLink="findAllCar">View Car</a>
+    
+    
+    <br/>
+
+
+    <hr/>
+        <router-outlet></router-outlet>
+    <hr/>
+  
+    <br/>
+    <input type="button" value="logout" (click)="logout()"/>
+    
+
+</div>
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-admindashboard',
+  templateUrl: './admindashboard.component.html',
+  styleUrls: ['./admindashboard.component.css']
+})
+export class AdmindashboardComponent implements OnInit {
+  user:string ="";
+  constructor(private router:Router) { }
+
+  ngOnInit(): void {
+    let obj = sessionStorage.getItem("userDetails");
+    if(obj!=null){
+      this.user=obj;
+    }
+  }
+
+  
+  logout() {
+    sessionStorage.removeItem("userDetails");
+    this.router.navigate(["login"]);
+  }
+  }
+
+
+<div>
+    <h2>Welcome {{user}} </h2>
+    <a routerLink="findCar">View Car</a> |
+    <a routerLink="addcar">Add Car</a> |
+    <a routerLink="ViewCar">View UserCars</a>
+    <br/>
+    <hr/>
+        <router-outlet></router-outlet>
+    <hr/>
+    <br/>
+    <input type="button" value="logout" (click)="logout()"/>
+</div>
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-userdashboard',
+  templateUrl: './userdashboard.component.html',
+  styleUrls: ['./userdashboard.component.css']
+})
+export class UserdashboardComponent implements OnInit {
+  user:string ="";
+  constructor(private router:Router) { }
+
+  ngOnInit(): void {
+    let obj = sessionStorage.getItem("userDetails");
+    if(obj!=null){
+      this.user=obj;
+    }
+  }
+  logout() {
+    sessionStorage.removeItem("userDetails");
+    this.router.navigate(["login"]);
+  }
+
+}
+
+
+
+<div>
+    <h2>Add Car</h2>
+    <form [formGroup]="carRef" (ngSubmit)="storeCar()">
+        <label>CName</label>
+        <input type="text" formControlName="cname"><br/>
+        <label>CPrice</label>
+        <input type="number" formControlName="cprice"><br/>
+        <label>CModel</label>
+        <input type="number" formControlName="cmodel"><br/>
+        <label>URL</label>
+        <input type="url" formControlName="url"><br/>
+        <input type="submit" value="store Car"/><br/>
+        <input type="reset" value="reset"/><br/>
+    </form><br/>
+    <span style="color:red">{{storeMsg}}</span>
+</div>
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { CarService } from '../car.service';
+
+@Component({
+  selector: 'app-add-car',
+  templateUrl: './add-car.component.html',
+  styleUrls: ['./add-car.component.css']
+})
+export class AddCarComponent implements OnInit {
+  carRef = new FormGroup({
+    cname:new FormControl(),
+    cprice:new FormControl(),
+    cmodel:new FormControl(),
+    url:new FormControl()
+  })
+  storeMsg :string =""
+
+  constructor(public cs:CarService) { }
+
+  ngOnInit(): void {
+  }
+  storeCar() {
+    let car = this.carRef.value;
+    this.cs.storeCar(car).subscribe({
+      next:(result:any)=>this.storeMsg=result,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("completed")
+    })
+
+    this.carRef.reset();
+
+}
+}
+
+
+
+div>
+    <h2>Add Car</h2>
+    <form [formGroup]="usercarRef" (ngSubmit)="storeUserCar()">
+        <label>CName</label>
+        <input type="text" formControlName="cname"><br/>
+        <label>CPrice</label>
+        <input type="number" formControlName="cprice"><br/>
+        <label>CModel</label>
+        <input type="number" formControlName="cmodel"><br/>
+        <label>URL</label>
+        <input type="url" formControlName="url"><br/>
+        <input type="submit" value="store Car"/><br/>
+        <input type="reset" value="reset"/><br/>
+    </form><br/>
+    <span style="color:red">{{storeMsg}}</span>
+</div>
+
+
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { UsercarService } from '../usercar.service';
+
+@Component({
+  selector: 'app-add-usercar',
+  templateUrl: './add-usercar.component.html',
+  styleUrls: ['./add-usercar.component.css']
+})
+export class AddUsercarComponent implements OnInit {
+  usercarRef = new FormGroup({
+    cname:new FormControl(),
+    cprice:new FormControl(),
+    cmodel:new FormControl(),
+    url:new FormControl()
+  })
+  storeMsg :string =""
+
+  constructor(public ucs:UsercarService) { }
+
+  ngOnInit(): void {
+  }
+  storeUserCar() {
+    let User_car = this.usercarRef.value;
+    this.ucs.storeUserCar(User_car).subscribe({
+      next:(result:any)=>this.storeMsg=result,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("completed")
+    })
+
+    this.usercarRef.reset();
+
+}
+}
+
+
+
+<div>
+    <h2>Add Car Details</h2>
+    <div *ngIf="flag">
+            <h2>Update Car</h2>
+            <form (ngSubmit)="updateDataFromDb()">
+                <label>CId</label>
+                <input type="number" name="cid" [(ngModel)]="cid" readonly/><br/>
+                <label>CPrice</label>
+                <input type="number" name="cprice" [(ngModel)]="cprice"/><br/>
+                <label>CModel</label>
+                <input type="number" name="cmodel" [(ngModel)]="cmodel"/><br/>
+                <label>URL</label>
+                <input type="URL" name="url" [(ngModel)]="url"/><br/>
+                <input type="submit" value="update data"/>
+                <input type="reset" value="reset"/>
+            </form>
+    </div>
+   <span *ngFor="let c of cars">
+        <img src={{c.url}} width="300px" height="300px"/>
+        <span>{{c.cname}} {{c.cprice}} {{c.cmodel}}</span>
+        <input type="button" value="delete" (click)="deleteCar(c.cid)"/>
+        <input type="button" value="update" (click)="updateCar(c)"/>
+    </span>
+</div>
+
+
+import { Component, OnInit } from '@angular/core';
+import { Car } from '../car';
+import { CarService } from '../car.service';
+
+@Component({
+  selector: 'app-admin-car-retrieve',
+  templateUrl: './admin-car-retrieve.component.html',
+  styleUrls: ['./admin-car-retrieve.component.css']
+})
+export class AdminCarRetrieveComponent implements OnInit {
+  cars:Array<Car>=[]
+  constructor(public cs:CarService) { }
+
+  ngOnInit(): void {
+    this.findAllCar();
+  }
+  flag:boolean = false;
+  cid:number =0;
+  cprice:number =0;
+  cmodel:number=0;
+  url:string ="";
+  findAllCar() {
+    this.cs.findAllCar().subscribe({
+      next:(result:any)=>this.cars=result,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("completed")
+    })
+
+}
+deleteCar(cid:number){
+  //console.log(pid)
+  this.cs.deleteCarById(cid).subscribe({
+    next:(result:any)=>console.log(result),
+    error:(error:any)=>console.log(error),
+    complete:()=>{
+        this.findAllCar();   
+    }
+  })
+}
+updateCar(car:any){
+  this.flag= true;
+  this.cid=car.cid;
+  this.cprice=car.cprice;
+  this.cmodel=car.cmodel
+  this.url=car.url;
+}
+updateDataFromDb(){
+  let car = {cid:this.cid,cprice:this.cprice,cmodel:this.cmodel,url:this.url};
+  this.cs.updateCar(car).subscribe({
+    next:(result:any)=>console.log(result),
+    error:(error:any)=>console.log(error),
+    complete:()=>{
+        this.findAllCar();   
+    }
+  })
+  this.flag=false;
+}
+}
+
+
+
+<div>
+    <h2>Add Car Details</h2>
+    <div *ngIf="flag">
+            <h2>Update Car</h2>
+            <form (ngSubmit)="updateDataFromDb()">
+                <label>CId</label>
+                <input type="number" name="cid" [(ngModel)]="cid" readonly/><br/>
+                <label>CPrice</label>
+                <input type="number" name="cprice" [(ngModel)]="cprice"/><br/>
+                <label>CModel</label>
+                <input type="number" name="cmodel" [(ngModel)]="cmodel"/><br/>
+                <label>URL</label>
+                <input type="URL" name="url" [(ngModel)]="url"/><br/>
+                <input type="submit" value="update data"/>
+                <input type="reset" value="reset"/>
+            </form>
+    </div>
+    <span *ngFor="let c of Usercars">
+        <img src={{c.url}} width="300px" height="300px"/>
+        <span>{{c.cname}} {{c.cprice}} {{c.cmodel}}</span>
+        <input type="button" value="delete" (click)="deleteUserCar(c.cid)"/>
+        <input type="button" value="update" (click)="updateUserCar(c)"/>
+    </span>
+   
+    
+</div>
+
+
+
+import { Component, OnInit } from '@angular/core';
+
+import { Usercar } from '../usercar';
+import { UsercarService } from '../usercar.service';
+
+@Component({
+  selector: 'app-user-car',
+  templateUrl: './user-car.component.html',
+  styleUrls: ['./user-car.component.css']
+})
+export class UserCarComponent implements OnInit {
+  Usercars:Array<Usercar>=[]
+  constructor(public ucs:UsercarService) { }
+
+  ngOnInit(): void {
+    this.findAllUserCar();
+  }
+  flag:boolean = false;
+  cid:number =0;
+  cprice:number =0;
+  cmodel:number=0;
+  url:string ="";
+  findAllUserCar() {
+    this.ucs.findAllUserCar().subscribe({
+      next:(result:any)=>this.Usercars=result,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("completed")
+    })
+  }
+  deleteUserCar(cid:number){
+    //console.log(pid)
+    this.ucs.deleteUserCarById(cid).subscribe({
+      next:(result:any)=>console.log(result),
+      error:(error:any)=>console.log(error),
+      complete:()=>{
+          this.findAllUserCar();   
+      }
+    })
+  }
+  updateUserCar(Usercar:any){
+    this.flag= true;
+    this.cid=Usercar.cid;
+    this.cprice=Usercar.cprice;
+    this.cmodel=Usercar.cmodel
+    this.url=Usercar.url;
+  }
+  updateDataFromDb(){
+    let car = {cid:this.cid,cprice:this.cprice,cmodel:this.cmodel,url:this.url};
+    this.ucs.updateUserCar(Usercar).subscribe({
+      next:(result:any)=>console.log(result),
+      error:(error:any)=>console.log(error),
+      complete:()=>{
+          this.findAllUserCar();   
+      }
+    })
+    this.flag=false;
+  }
+
+
+}
+
+
+<div>
+    <span *ngFor="let c of cars">
+        <img src={{c.url}} width="300px" height="300px"/>
+        <span>{{c.cname}} {{c.cprice}} {{c.cmodel}} </span>
+        
+    </span>
+    
+</div>
+
+import { Component, OnInit } from '@angular/core';
+import { Car } from '../car';
+import { CarService } from '../car.service';
+
+@Component({
+  selector: 'app-user-car-retrieve',
+  templateUrl: './user-car-retrieve.component.html',
+  styleUrls: ['./user-car-retrieve.component.css']
+})
+export class UserCarRetrieveComponent implements OnInit {
+  cars:Array<Car>=[]
+  constructor(public cs:CarService) { }
+
+  ngOnInit(): void {
+    this.findAllCar();
+  }
+  flag:boolean = false;
+  cid:number =0;
+  cprice:number =0;
+  cmodel:number=0;
+  url:string ="";
+  findAllCar() {
+    this.cs.findAllCar().subscribe({
+      next:(result:any)=>this.cars=result,
+      error:(error:any)=>console.log(error),
+      complete:()=>console.log("completed")
+    })
+
+}
+}
+
+
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AddCarComponent } from './add-car/add-car.component';
+import { AddUsercarComponent } from './add-usercar/add-usercar.component';
+import { AdminCarRetrieveComponent } from './admin-car-retrieve/admin-car-retrieve.component';
+import { AdmindashboardComponent } from './admindashboard/admindashboard.component';
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+import { SignupComponent } from './signup/signup.component';
+import { UserCarRetrieveComponent } from './user-car-retrieve/user-car-retrieve.component';
+import { UserCarComponent } from './user-car/user-car.component';
+import { UserdashboardComponent } from './userdashboard/userdashboard.component';
+
+const routes: Routes = [
+  {path:"home",component:HomeComponent},
+  {path:"login",component:LoginComponent},
+  {path:"adminHome",component:AdmindashboardComponent,children:[
+     {path:"addCar",component:AddCarComponent},
+     {path:"findAllCar",component:AdminCarRetrieveComponent},
+    
+  ]},
+  {path:"userHome",component:UserdashboardComponent,children:[
+    {path:"findCar",component:UserCarRetrieveComponent},
+    {path:"addcar",component:AddUsercarComponent},
+    {path:"ViewCar",component:UserCarComponent}
+  ]},
+  {path:"signUp",component:SignupComponent},
+  {path:"",redirectTo:"login",pathMatch:"full"}
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+
+<div align="center">
+  <h2>Welcome to Drive Your Way</h2>
+  <a routerLink="home">Home</a> |
+  <a routerLink="login">Login</a>
+  <hr/>
+  <router-outlet></router-outlet>
+
+  
+</div>
+
+
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LoginService {
+  baseURL:string ="http://localhost:9090/login";
+  constructor(public http:HttpClient) { }
+
+  signIn(login:any):Observable<string> {
+    return this.http.post(this.baseURL+"/signIn",login,{responseType:"text"});
+  }
+
+
+  
+  signUp(login:any):Observable<string> {
+    return this.http.post(this.baseURL+"/signUp",login,{responseType:"text"});
+  }
+}
+
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Car } from './car';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CarService {
+  baseUrl:string ="http://localhost:9090/car"
+  constructor(public http:HttpClient) { }
+
+  storeCar(car:any):Observable<string> {
+    return this.http.post(this.baseUrl+"/storeCar",car,{responseType:"text"});
+  }
+  updateCar(car:any):Observable<string> {
+    return this.http.patch(this.baseUrl+"/updateCar",car,{responseType:"text"});
+  }
+  findAllCar():Observable<Car[]> {
+    return this.http.get<Car[]>(this.baseUrl+"/findAllCar");
+  }
+  deleteCarById(cid:number):Observable<string> {
+    return this.http.delete(this.baseUrl+"/deleteCar/"+cid,{responseType:"text"});
+  }
+}
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Car } from './car';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UsercarService {
+  baseUrl:string ="http://localhost:9090/usercar"
+
+  constructor(public http:HttpClient) { }
+
+  storeUserCar(usercar:any):Observable<string> {
+    return this.http.post(this.baseUrl+"/storeUserCar",usercar,{responseType:"text"});
+  }
+  updateUserCar(usercar:any):Observable<string> {
+    return this.http.patch(this.baseUrl+"/updateUserCar",usercar,{responseType:"text"});
+  }
+  findAllUserCar():Observable<Car[]> {
+    return this.http.get<Car[]>(this.baseUrl+"/findAllUserCar");
+  }
+  
+  deleteUserCarById(cid:number):Observable<string> {
+    return this.http.delete(this.baseUrl+"/deleteUserCar/"+cid,{responseType:"text"});
+  }
+
+
+
+
+export class Usercar {
+    constructor(public cid:number,
+        public cname:string,
+        public cprice:number,
+        public cmodel:number,
+        public url:string){}
+}
+
+
+
+export class Car {
+
+    constructor(public cid:number,
+        public cname:string,
+        public cprice:number,
+        public cmodel:number,
+        public url:string){}
+}
+
+
+
+package com;
+
+import org.testng.annotations.Test;
+
+import org.testng.annotations.BeforeMethod;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.testng.annotations.AfterMethod;
+
+public class NewTest {
+@Test
+	    public void OnlineCarTest () {
+	    	wd.get("http://localhost:4200/home");
+		    
+	   	    wd.manage().window().maximize();
+	   	    wd.manage().timeouts().implicitlyWait(Duration.ofMinutes(2));
+	   	 WebElement linkRef = wd.findElement(By.xpath("/html/body/app-root/div/a[2]"));
+	   	linkRef.sendKeys(Keys.ENTER);
+	   	WebElement textFieldRef = wd.findElement(By.xpath("/html/body/app-root/div/app-login/div/form/input[1]"));
+	   	textFieldRef.sendKeys("admin@gmail.com");
+	   	WebElement textFieldRef1 = wd.findElement(By.xpath("/html/body/app-root/div/app-login/div/form/input[2]"));
+	   	textFieldRef1.sendKeys("admin@123");
+	   	WebElement textFieldRef2 = wd.findElement(By.xpath("/html/body/app-root/div/app-login/div/form/input[3]"));
+	   	textFieldRef2.sendKeys("Keys.CLICK");
+	   	WebElement buttonRef = wd.findElement(By.xpath("//html/body/app-root/div/app-login/div/form/input[5]"));
+	   	buttonRef.sendKeys(Keys.ENTER);
+	   	
+	   	
+	   	
+	   	
+	    	
+	    }
+	    
+	    
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>MyProjects</groupId>
+  <artifactId>Project2</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+  
+  <dependencies>
+  <dependency>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.5</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.2.1</version>
+</dependency>
+  </dependencies>
+</project>

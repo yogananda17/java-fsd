@@ -1,0 +1,80 @@
+
+
+sudo yum update -y
+
+
+sudo yum install -y docker git
+
+sudo systemctl start docker
+
+sudo systemctl enable docker
+
+sudo usermod -aG docker ec2-user
+
+
+sudo docker version
+
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)"  -o /usr/local/bin/docker-compose
+
+
+
+sudo mv /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+
+sudo chmod +x /usr/bin/docker-compose
+
+docker-compose up -d
+
+
+
+version: "3"
+
+services: 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+    environment: 
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    networks: 
+      - logging-network
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.1.1
+    depends_on: 
+      - elasticsearch
+    ports:
+      - 12201:12201/udp
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro 
+    networks:
+      - logging-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.1.1
+    depends_on:
+      - logstash
+    ports: 
+      - 5601:5601
+    networks: 
+      - logging-network
+
+  httpd:
+    image: httpd:latest
+    depends_on:
+      - logstash
+    ports:
+      - 80:80
+    logging:
+      driver: gelf
+      options:
+        # Use udp://host.docker.internal:12201 when you are using Docker Desktop for Mac
+        # docs: https://docs.docker.com/docker-for-mac/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host
+        # issue: https://github.com/lvthillo/docker-elk/issues/1
+        gelf-address: "udp://localhost:12201"
+
+networks: 
+  logging-network:
+    driver: bridge
+
+

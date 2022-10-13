@@ -1,0 +1,37 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+
+
+
+
+
+Aim:Design and develop an online car selling and buying portal.
+
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:Create folder and in that folder create frontend and backend folder.
+Step 3:With help of spring initializr create maven project
+Step 4:Create frontend project
+Step 5:Import the backend project in eclipse
+Step 6:create login.java
+Step 7:create all bean,service,repositry,and controller classes
+Step 8:connect to database
+Step 9:run the project
+Step 10:create ng g c login in vscode
+Step 11:create ng g c signup
+Step 12:create ng g c admindashboard
+Step 13:create ng g c userdashboard
+Step 14:create ng g c add-car
+Step 15:create ng g c admin-car-retriver
+Step 16:create ng g c add-usercar
+Step 17:run the project using ng serve -o
+Step 18:To connect both frontend and backend use @CrossOrigin in controller
+Step 19:Run the project
+Step20:Stop the project.

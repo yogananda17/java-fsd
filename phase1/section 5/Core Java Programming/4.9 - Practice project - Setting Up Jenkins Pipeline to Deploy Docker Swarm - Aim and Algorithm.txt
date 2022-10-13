@@ -1,0 +1,22 @@
+git url:https://github.com/yogananda17/java-fsd/tree/master/phase1/section%205/Core%20Java%20Programming
+
+
+
+
+
+Aim:You have to develop an environment for Docker networking. 
+
+
+
+
+Algorithm:
+Step 1:Start the program
+Step 2:Create instance in AWS
+Step 3:Copy SSH link 
+Step 4:Open cmd where key present
+Step 5:Paste link in CMD prompt
+Step 6:Install docker
+Step 7:Start docker
+Step 8:using password login into jenkins
+Step 9:build Project
+Step 10:Stop the project
